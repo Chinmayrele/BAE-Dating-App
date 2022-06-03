@@ -75,11 +75,11 @@ class _LoginState extends State<Login> {
             ),
             const SizedBox(height: 10),
             const Text(
-              'Log-In',
+              '𝓛𝓸𝓰-𝓘𝓷',
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: 26),
+                  fontSize: 30),
             ),
             const SizedBox(height: 10),
             const Text(

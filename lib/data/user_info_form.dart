@@ -1,13 +1,17 @@
+import 'dart:io';
+
 import 'package:bar_chat_dating_app/providers/info_provider.dart';
 import 'package:bar_chat_dating_app/screens/home_page_screen.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 // import 'package:flutter_tinder_clone_app/models/user_info.dart';
 
 import '../models/user_info.dart';
-import 'location_permi.dart';
 
 class UserInfoForm extends StatefulWidget {
   const UserInfoForm({Key? key}) : super(key: key);
@@ -20,7 +24,11 @@ class _UserInfoFormState extends State<UserInfoForm> {
   late InfoProviders profileUserInfo;
   final _form = GlobalKey<FormState>();
   String? _selectedGender;
+  String? _genderPreference;
   String? _selectedAge;
+  File? _imageFile;
+  UploadTask? task;
+  List<String> imageUrlsUser = [];
 
   List<String> items = [
     'Male',
@@ -38,15 +46,18 @@ class _UserInfoFormState extends State<UserInfoForm> {
     '27',
   ];
 
-  var _editedProfile = UserInfo(
+  var _editedProfile = UserInfos(
+    userId: FirebaseAuth.instance.currentUser!.uid,
     name: '',
     email: '',
     phoneNo: '',
     gender: '',
+    genderChoice: '',
     age: 0,
     about: '',
     interest: '',
     address: '',
+    imageUrls: [],
   );
 
   titleText(String text, bool isRequired) {
@@ -64,16 +75,63 @@ class _UserInfoFormState extends State<UserInfoForm> {
     );
   }
 
-  void saveForm() {
+  Future<void> getPicture() async {
+    try {
+      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        final imageTemp = File(image.path);
+        setState(() {
+          _imageFile = imageTemp;
+        });
+      }
+    } on PlatformException catch (err) {
+      print('Failed to Pick up the Image: $err');
+    }
+  }
+
+  void saveForm() async {
     final isValid = _form.currentState!.validate();
     if (!isValid) {
       return;
     }
     _form.currentState!.save();
     print(
-        "USER AGE ${_editedProfile.age}\nUSER GENDER ${_editedProfile.gender}\nUSER NAME ${_editedProfile.name}");
+        "USER AGE ${_editedProfile.age}\nUSER GENDER ${_editedProfile.genderChoice}\nUSER NAME ${_editedProfile.name}");
     //Firebase Logic
-    profileUserInfo.addUserProfileInfo(_editedProfile);
+    //FIREBASE IMAGE STORAGE LOGIC
+    try {
+      if (_imageFile != null) {
+        final fileName = _imageFile!.path;
+        final destination = 'files/$fileName';
+        final ref = FirebaseStorage.instance.ref(destination);
+        task = ref.putFile(_imageFile!);
+        if (task != null) {
+          final snapshot = await task!.whenComplete(() {});
+          final urlDownload = await snapshot.ref.getDownloadURL();
+          print('DOWNLOAD URL: $urlDownload');
+          imageUrlsUser.add(urlDownload);
+          _editedProfile = UserInfos(
+            userId: _editedProfile.userId,
+            name: _editedProfile.name,
+            email: _editedProfile.email,
+            phoneNo: _editedProfile.phoneNo,
+            gender: _editedProfile.gender,
+            genderChoice: _editedProfile.genderChoice,
+            age: _editedProfile.age,
+            about: _editedProfile.about,
+            interest: _editedProfile.interest,
+            address: _editedProfile.address,
+            imageUrls: imageUrlsUser,
+          );
+        }
+        if (task == null) {
+          return;
+        }
+      }
+    } on FirebaseException catch (e) {
+      print('Error Uploading: $e');
+    }
+    await profileUserInfo.addUserProfileInfo(_editedProfile);
     //Navigate after Completeing Firebase Logic
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (ctx) => const HomePageScreen()));
@@ -90,6 +148,68 @@ class _UserInfoFormState extends State<UserInfoForm> {
         child: SingleChildScrollView(
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Center(
+              child: Container(
+                width: 130,
+                height: 130,
+                decoration: BoxDecoration(
+                  color: Colors.white24,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    width: 1.5,
+                    color: Colors.white,
+                  ),
+                ),
+                child: _imageFile != null
+                    ? Stack(
+                        children: [
+                          GestureDetector(
+                            onTap: () {},
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white12,
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                  image: Image.file(_imageFile!).image,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            alignment: Alignment.bottomRight,
+                            child: FloatingActionButton(
+                              onPressed: () {
+                                setState(() {
+                                  getPicture();
+                                });
+                              },
+                              child: const Icon(
+                                Icons.camera_alt_rounded,
+                                size: 32,
+                                color: Colors.white,
+                              ),
+                              backgroundColor: Colors.pink[700],
+                            ),
+                          ),
+                        ],
+                      )
+                    : InkWell(
+                        onTap: () {
+                          setState(() {
+                            getPicture();
+                          });
+                        },
+                        child: Center(
+                          child: Icon(
+                            Icons.camera_alt_rounded,
+                            color: Colors.pink[400],
+                            size: 34,
+                          ),
+                        ),
+                      ),
+              ),
+            ),
             titleText('Full Name', true),
             TextFormField(
               style: const TextStyle(color: Colors.white, fontSize: 16),
@@ -119,15 +239,18 @@ class _UserInfoFormState extends State<UserInfoForm> {
                 return null;
               },
               onSaved: (val) {
-                _editedProfile = UserInfo(
+                _editedProfile = UserInfos(
+                  userId: _editedProfile.userId,
                   name: val.toString(),
                   email: _editedProfile.email,
                   phoneNo: _editedProfile.phoneNo,
                   gender: _editedProfile.gender,
+                  genderChoice: _editedProfile.genderChoice,
                   age: _editedProfile.age,
                   about: _editedProfile.about,
                   interest: _editedProfile.interest,
                   address: _editedProfile.address,
+                  imageUrls: _editedProfile.imageUrls,
                 );
               },
             ),
@@ -168,15 +291,18 @@ class _UserInfoFormState extends State<UserInfoForm> {
                 return null;
               },
               onSaved: (val) {
-                _editedProfile = UserInfo(
+                _editedProfile = UserInfos(
+                  userId: _editedProfile.userId,
                   name: _editedProfile.name,
                   email: val.toString(),
                   phoneNo: _editedProfile.phoneNo,
                   gender: _editedProfile.gender,
+                  genderChoice: _editedProfile.genderChoice,
                   age: _editedProfile.age,
                   about: _editedProfile.about,
                   interest: _editedProfile.interest,
                   address: _editedProfile.address,
+                  imageUrls: _editedProfile.imageUrls,
                 );
               },
             ),
@@ -218,15 +344,18 @@ class _UserInfoFormState extends State<UserInfoForm> {
                 return null;
               },
               onSaved: (val) {
-                _editedProfile = UserInfo(
+                _editedProfile = UserInfos(
+                  userId: _editedProfile.userId,
                   name: _editedProfile.name,
                   email: _editedProfile.email,
                   phoneNo: val.toString(),
                   gender: _editedProfile.gender,
+                  genderChoice: _editedProfile.genderChoice,
                   age: _editedProfile.age,
                   about: _editedProfile.about,
                   interest: _editedProfile.interest,
                   address: _editedProfile.address,
+                  imageUrls: _editedProfile.imageUrls,
                 );
               },
             ),
@@ -444,7 +573,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
             //               return null;
             //             },
             //             onSaved: (val) {
-            //               _editedProfile = UserInfo(
+            //               _editedProfile = UserInfos(
             //                 name: _editedProfile.name,
             //                 email: _editedProfile.email,
             //                 phoneNo: _editedProfile.phoneNo,
@@ -505,7 +634,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
             //               return null;
             //             },
             //             onSaved: (val) {
-            //               _editedProfile = UserInfo(
+            //               _editedProfile = UserInfos(
             //                 name: _editedProfile.name,
             //                 email: _editedProfile.email,
             //                 phoneNo: _editedProfile.phoneNo,
@@ -549,17 +678,95 @@ class _UserInfoFormState extends State<UserInfoForm> {
                 // suffixIcon: const Icon(Icons.mic, color: Colors.grey),
               ),
               onSaved: (val) {
-                _editedProfile = UserInfo(
+                _editedProfile = UserInfos(
+                  userId: _editedProfile.userId,
                   name: _editedProfile.name,
                   email: _editedProfile.email,
                   phoneNo: _editedProfile.phoneNo,
                   gender: _editedProfile.gender,
+                  genderChoice: _editedProfile.genderChoice,
                   age: _editedProfile.age,
                   about: val.toString(),
                   interest: _editedProfile.interest,
                   address: _editedProfile.address,
+                  imageUrls: _editedProfile.imageUrls,
                 );
               },
+            ),
+            titleText('Who would you like to date', true),
+            SizedBox(
+              width: double.infinity,
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton2(
+                  isExpanded: true,
+                  hint: Row(
+                    children: const [
+                      SizedBox(
+                        width: 4,
+                      ),
+                      Expanded(
+                        child: Text(
+                          'Date Preference',
+                          style: TextStyle(
+                            fontSize: 15,
+                            wordSpacing: 2,
+                            color: Colors.white,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  items: items
+                      .map((item) => DropdownMenuItem<String>(
+                            value: item,
+                            child: Text(
+                              item,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                color: Colors.white,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ))
+                      .toList(),
+                  value: _genderPreference,
+                  onChanged: (value) {
+                    setState(() {
+                      _genderPreference = value as String;
+                    });
+                  },
+                  icon: const Icon(
+                    Icons.arrow_drop_down,
+                  ),
+                  iconSize: 24,
+                  iconEnabledColor: Colors.grey,
+                  iconDisabledColor: Colors.white24,
+                  buttonHeight: 48,
+                  buttonWidth: 150,
+                  buttonPadding: const EdgeInsets.only(left: 24, right: 14),
+                  buttonDecoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(color: Colors.pink, width: 2),
+                    color: Colors.white24,
+                  ),
+                  buttonElevation: 2,
+                  itemHeight: 40,
+                  itemPadding: const EdgeInsets.only(left: 14, right: 14),
+                  dropdownMaxHeight: 200,
+                  dropdownWidth: MediaQuery.of(context).size.width * 0.92,
+                  dropdownPadding: const EdgeInsets.only(left: 24),
+                  dropdownDecoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: Colors.pink,
+                  ),
+                  dropdownElevation: 8,
+                  scrollbarRadius: const Radius.circular(30),
+                  scrollbarThickness: 6,
+                  scrollbarAlwaysShow: true,
+                  offset: const Offset(0, 0),
+                ),
+              ),
             ),
             titleText('Interest', true),
             TextFormField(
@@ -593,15 +800,18 @@ class _UserInfoFormState extends State<UserInfoForm> {
                 return null;
               },
               onSaved: (val) {
-                _editedProfile = UserInfo(
+                _editedProfile = UserInfos(
+                  userId: _editedProfile.userId,
                   name: _editedProfile.name,
                   email: _editedProfile.email,
                   phoneNo: _editedProfile.phoneNo,
                   gender: _editedProfile.gender,
+                  genderChoice: _editedProfile.genderChoice,
                   age: _editedProfile.age,
                   about: _editedProfile.about,
                   interest: val.toString(),
                   address: _editedProfile.address,
+                  imageUrls: _editedProfile.imageUrls,
                 );
               },
             ),
@@ -630,15 +840,18 @@ class _UserInfoFormState extends State<UserInfoForm> {
                 suffixIcon: const Icon(Icons.location_on, color: Colors.grey),
               ),
               onSaved: (val) {
-                _editedProfile = UserInfo(
+                _editedProfile = UserInfos(
+                  userId: _editedProfile.userId,
                   name: _editedProfile.name,
                   email: _editedProfile.email,
                   phoneNo: _editedProfile.phoneNo,
                   gender: _editedProfile.gender,
+                  genderChoice: _editedProfile.genderChoice,
                   age: _editedProfile.age,
                   about: _editedProfile.about,
                   interest: _editedProfile.interest,
                   address: val.toString(),
+                  imageUrls: _editedProfile.imageUrls,
                 );
               },
             ),
@@ -656,15 +869,18 @@ class _UserInfoFormState extends State<UserInfoForm> {
                       fontSize: 17),
                 ),
                 onPressed: () {
-                  _editedProfile = UserInfo(
+                  _editedProfile = UserInfos(
+                    userId: _editedProfile.userId,
                     name: _editedProfile.name,
                     email: _editedProfile.email,
                     phoneNo: _editedProfile.phoneNo,
                     gender: _selectedGender.toString(),
+                    genderChoice: _genderPreference.toString(),
                     age: int.parse(_selectedAge.toString()),
                     about: _editedProfile.about,
                     interest: _editedProfile.interest,
                     address: _editedProfile.address,
+                    imageUrls: _editedProfile.imageUrls,
                   );
                   saveForm();
                 },

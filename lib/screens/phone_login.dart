@@ -48,11 +48,11 @@ class _PhoneLoginState extends State<PhoneLogin> {
               ),
               const SizedBox(height: 20),
               Container(
-                height: 100,
+                height: MediaQuery.of(context).size.height * 0.1,
                 width: double.infinity,
                 margin: const EdgeInsets.only(bottom: 15),
                 child: Image.asset(
-                  'assets/images/bae_logo.jpeg',
+                  'assets/images/bae_flogo.png',
                   // fit: BoxFit.cover,
                 ),
                 decoration: const BoxDecoration(
@@ -174,7 +174,8 @@ class _PhoneLoginState extends State<PhoneLogin> {
                           verifyId = vId;
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                                builder: (ctx) => OtpRequest(auth: auth, verificationId: verifyId)),
+                                builder: (ctx) => OtpRequest(
+                                    auth: auth, verificationId: verifyId)),
                           );
                         });
                       },

@@ -9,6 +9,7 @@ import '../common/color_constants.dart';
 import '../data/explore_json.dart';
 import '../data/icons.dart';
 import '../data/panel_widget.dart';
+import '../models/user_info.dart';
 
 /*
 Title:ExploreScreen
@@ -26,16 +27,45 @@ class _ExploreScreenState extends State<ExploreScreen>
     with TickerProviderStateMixin {
   final PanelController panelController = PanelController();
   CardController? controller;
+  late InfoProviders userData;
+  late InfoProviders result;
+  late List<UserInfos> userProfileDataResult;
+  late List<UserInfos> usersDataResult;
+  bool isLoading = true;
+  bool isFirstLoading = true;
 
-  List itemsTemp = [];
+  List<UserInfos> itemsTemp = [];
   int itemLength = 0;
+  // List itemsTemp = [];
+  // int itemLength = 0;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    setState(() {
-      itemsTemp = explore_json;
-      itemLength = explore_json.length;
+    result = Provider.of<InfoProviders>(context, listen: false);
+    result.fetchUSerProfileData().then((_) {
+      userProfileDataResult = result.userInfo;
+      print("LENGTH OF USERPROFILE DATA:  ${userProfileDataResult.length}");
+      isFirstLoading = false;
+      print('EXPLORE SCREEN INIT STATE 1st PRINT');
+      print("GENDER CHOICE USER: ${userProfileDataResult[0].genderChoice}");
+      result
+          .fetchUsersData(userProfileDataResult[0].genderChoice)
+          .then((_) {
+        print('FETCH USER DATA ENTER THEN VALUE');
+        setState(() {
+          print('122334wffvfgy64564ghfg');
+          itemsTemp = result.usersData;
+          itemLength = result.usersData.length;
+          print("ITEM LENGTH: $itemLength");
+          isLoading = false;
+        });
+        // });
+        print('888888888888888888888888');
+      });
+
+      // setState(() {
+      // itemsTemp = explore_json;
+      // itemLength = explore_json.length;
     });
   }
 
@@ -46,20 +76,25 @@ class _ExploreScreenState extends State<ExploreScreen>
     return Scaffold(
       // backgroundColor: ColorConstants.kWhite,
       // appBar: AppBar(title: Text('Find People Who Match With')),
-      body: SlidingUpPanel(
-        color: Colors.black,
-        controller: panelController,
-        minHeight: 0,
-        maxHeight: MediaQuery.of(context).size.height * 0.5,
-        parallaxEnabled: true,
-        parallaxOffset: 0.5,padding: const EdgeInsets.only(top: 15),
-        borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-        body: getBody(panelController),
-        panelBuilder: (controller) => PanelWidget(
-          controller: controller,
-        ),
-      ),
+      body: (isFirstLoading && isLoading)
+          ? const CircularProgressIndicator()
+          : SlidingUpPanel(
+              color: Colors.black,
+              controller: panelController,
+              minHeight: 0,
+              maxHeight: MediaQuery.of(context).size.height * 0.5,
+              parallaxEnabled: true,
+              parallaxOffset: 0.5,
+              padding: const EdgeInsets.only(top: 15),
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+              body: getBody(panelController),
+              panelBuilder: (controller) => PanelWidget(
+                controller: controller,
+                userProfileDataResult: userProfileDataResult,
+                index: indexR,
+              ),
+            ),
       // bottomSheet: getBottomSheet(),
     );
   }
@@ -71,30 +106,55 @@ class _ExploreScreenState extends State<ExploreScreen>
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         // SizedBox(height: size.height * 0.06),
-        Row(
-          children: [
-            SizedBox(width: size.width * 0.18),
-            const Text(
-              'Find People Who Can ',
-              style: TextStyle(
+        RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+                text: 'Find People Who Can ',
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: 19),
-            ),
-            Text(
-              '𝓜𝓪𝓽𝓬𝓱',
-              style: TextStyle(
-                  color: Colors.red.withOpacity(0.7),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 21),
-            )
-          ],
-        ),
-        const Text(
-          'With You!',
-          style: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 19),
-        ),
+                  fontSize: 19,
+                ),
+                children: [
+                  TextSpan(
+                    text: '𝓜𝓪𝓽𝓬𝓱',
+                    style: TextStyle(
+                        color: Colors.red.withOpacity(0.7),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 21),
+                  ),
+                  const TextSpan(
+                    text: ' With You',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 19),
+                  ),
+                ])),
+        // Row(
+        //   children: [
+        //     SizedBox(width: size.width * 0.18),
+        //     const Text(
+        //       'Find People Who Can ',
+        //       style: TextStyle(
+        //           color: Colors.white,
+        //           fontWeight: FontWeight.bold,
+        //           fontSize: 19),
+        //     ),
+        //     Text(
+        //       '𝓜𝓪𝓽𝓬𝓱',
+        //       style: TextStyle(
+        //           color: Colors.red.withOpacity(0.7),
+        //           fontWeight: FontWeight.bold,
+        //           fontSize: 21),
+        //     )
+        //   ],
+        // ),
+        // const Text(
+        //   'With You!',
+        //   style: TextStyle(
+        //       color: Colors.white, fontWeight: FontWeight.bold, fontSize: 19),
+        // ),
         SizedBox(
           height: size.height * 0.75,
           child: TinderSwapCard(
@@ -124,7 +184,8 @@ class _ExploreScreenState extends State<ExploreScreen>
                         height: size.height,
                         decoration: BoxDecoration(
                           image: DecorationImage(
-                              image: AssetImage(itemsTemp[index]['img']),
+                              image:
+                                  NetworkImage(itemsTemp[index].imageUrls[0]),
                               fit: BoxFit.cover),
                         ),
                       ),
@@ -164,7 +225,7 @@ class _ExploreScreenState extends State<ExploreScreen>
                                           Row(
                                             children: [
                                               Text(
-                                                itemsTemp[index]['name'],
+                                                itemsTemp[index].name,
                                                 style: const TextStyle(
                                                     color:
                                                         ColorConstants.kWhite,
@@ -176,7 +237,7 @@ class _ExploreScreenState extends State<ExploreScreen>
                                                 width: 10,
                                               ),
                                               Text(
-                                                itemsTemp[index]['age'],
+                                                itemsTemp[index].age.toString(),
                                                 style: const TextStyle(
                                                   color: ColorConstants.kWhite,
                                                   fontSize: 22,
@@ -206,78 +267,78 @@ class _ExploreScreenState extends State<ExploreScreen>
                                             ],
                                           ),
                                           const SizedBox(height: 15),
-                                          Row(
-                                            children: List.generate(
-                                                itemsTemp[index]['likes']
-                                                    .length, (indexLikes) {
-                                              if (indexLikes == 0) {
-                                                return Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          right: 8),
-                                                  child: Container(
-                                                    decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                            color:
-                                                                ColorConstants
-                                                                    .kWhite,
-                                                            width: 2),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(30),
-                                                        color: ColorConstants
-                                                            .kWhite
-                                                            .withOpacity(0.4)),
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              top: 3,
-                                                              bottom: 3,
-                                                              left: 10,
-                                                              right: 10),
-                                                      child: Text(
-                                                        itemsTemp[index]
-                                                                ['likes']
-                                                            [indexLikes],
-                                                        style: const TextStyle(
-                                                            color:
-                                                                ColorConstants
-                                                                    .kWhite),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                );
-                                              }
-                                              return Padding(
-                                                padding: const EdgeInsets.only(
-                                                    right: 8),
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              30),
-                                                      color: ColorConstants
-                                                          .kWhite
-                                                          .withOpacity(0.2)),
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            top: 3,
-                                                            bottom: 3,
-                                                            left: 10,
-                                                            right: 10),
-                                                    child: Text(
-                                                      itemsTemp[index]['likes']
-                                                          [indexLikes],
-                                                      style: const TextStyle(
-                                                          color: ColorConstants
-                                                              .kWhite),
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            }),
-                                          )
+                                          // Row(
+                                          //   children: List.generate(
+                                          //       itemsTemp[index]['likes']
+                                          //           .length, (indexLikes) {
+                                          //     if (indexLikes == 0) {
+                                          //       return Padding(
+                                          //         padding:
+                                          //             const EdgeInsets.only(
+                                          //                 right: 8),
+                                          //         child: Container(
+                                          //           decoration: BoxDecoration(
+                                          //               border: Border.all(
+                                          //                   color:
+                                          //                       ColorConstants
+                                          //                           .kWhite,
+                                          //                   width: 2),
+                                          //               borderRadius:
+                                          //                   BorderRadius
+                                          //                       .circular(30),
+                                          //               color: ColorConstants
+                                          //                   .kWhite
+                                          //                   .withOpacity(0.4)),
+                                          //           child: Padding(
+                                          //             padding:
+                                          //                 const EdgeInsets.only(
+                                          //                     top: 3,
+                                          //                     bottom: 3,
+                                          //                     left: 10,
+                                          //                     right: 10),
+                                          //             child: Text(
+                                          //               itemsTemp[index]
+                                          //                       ['likes']
+                                          //                   [indexLikes],
+                                          //               style: const TextStyle(
+                                          //                   color:
+                                          //                       ColorConstants
+                                          //                           .kWhite),
+                                          //             ),
+                                          //           ),
+                                          //         ),
+                                          //       );
+                                          //     }
+                                          //     return Padding(
+                                          //       padding: const EdgeInsets.only(
+                                          //           right: 8),
+                                          //       child: Container(
+                                          //         decoration: BoxDecoration(
+                                          //             borderRadius:
+                                          //                 BorderRadius.circular(
+                                          //                     30),
+                                          //             color: ColorConstants
+                                          //                 .kWhite
+                                          //                 .withOpacity(0.2)),
+                                          //         child: Padding(
+                                          //           padding:
+                                          //               const EdgeInsets.only(
+                                          //                   top: 3,
+                                          //                   bottom: 3,
+                                          //                   left: 10,
+                                          //                   right: 10),
+                                          //           child: Text(
+                                          //             itemsTemp[index]['likes']
+                                          //                 [indexLikes],
+                                          //             style: const TextStyle(
+                                          //                 color: ColorConstants
+                                          //                     .kWhite),
+                                          //           ),
+                                          //         ),
+                                          //       ),
+                                          //     );
+                                          //   }),
+                                          // )
                                         ],
                                       ),
                                     ),
@@ -314,7 +375,7 @@ class _ExploreScreenState extends State<ExploreScreen>
                 ),
               );
             },
-            cardController: controller = CardController(),
+            cardController: controller,
             swipeUpdateCallback: (DragUpdateDetails details, Alignment align) {
               /// Get swiping card's alignment
               if (align.x < -4) {

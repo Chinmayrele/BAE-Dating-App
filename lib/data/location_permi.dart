@@ -42,7 +42,7 @@ class _LocationPermiState extends State<LocationPermi> {
         _permissionGranted == PermissionStatus.denied
             ?  isloading = true
             : Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (ctx) => const PersonInfo()));
+                MaterialPageRoute(builder: (ctx) => const PersonInfo(isEdit: false,)));
       });
     }
     // else {

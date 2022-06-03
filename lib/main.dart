@@ -1,4 +1,5 @@
 import 'package:bar_chat_dating_app/providers/info_provider.dart';
+import 'package:bar_chat_dating_app/screens/account_screen.dart';
 import 'package:bar_chat_dating_app/screens/home_page_screen.dart';
 import 'package:bar_chat_dating_app/screens/person_info.dart';
 import 'package:bar_chat_dating_app/screens/que_screen.dart';
@@ -6,6 +7,7 @@ import 'package:bar_chat_dating_app/screens/start_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,8 +27,8 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(scaffoldBackgroundColor: Colors.black),
         //FOR SEEING LOGIN SCREEN ENTER 'STARTSCREEN()'
-        home: StartScreen(),
-        // home: const QueScreen(),
+        home: const StartScreen(),
+        // home:  PersonInfo(isEdit: false,),
       ),
     );
   }

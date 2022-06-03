@@ -10,7 +10,7 @@ import '../auth/login.dart';
 import './phone_login.dart';
 
 class StartScreen extends StatelessWidget {
-  StartScreen({Key? key}) : super(key: key);
+  const StartScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,33 +28,34 @@ class StartScreen extends StatelessWidget {
             // ),
             //  SizedBox(height: deviceSize.height*0.02),
             SizedBox(
-              height: deviceSize.height * 0.2,
+              height: deviceSize.height * 0.14,
               width: double.infinity,
               child: Image.asset(
-                'assets/images/bae_logo.jpeg',
-                fit: BoxFit.cover,
+                'assets/images/bae_flogo.png',
+                // fit: BoxFit.cover,
               ),
             ),
-            SizedBox(height: deviceSize.height * 0.1),
+            SizedBox(height: deviceSize.height * 0.2),
             const Text(
-              'WELCOME!',
+              '𝓦𝓔𝓛𝓒𝓞𝓜𝓔!',
               style: TextStyle(
+                letterSpacing: 2,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: 30),
+                  fontSize: 35),
             ),
             SizedBox(height: deviceSize.height * 0.02),
-            Container(
-              margin: EdgeInsets.only(left: deviceSize.width * 0.2),
-              width: deviceSize.width * 0.8,
-              child: const Text(
-                'Create an Account and Get Started Now!',
-                // 'Create an Account and Plan your Customizable trip Now!',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-            ),
+            // Container(
+            //   margin: EdgeInsets.only(left: deviceSize.width * 0.2),
+            //   width: deviceSize.width * 0.8,
+            //   child: const Text(
+            //     'Create an Account and Get Started Now!',
+            //     // 'Create an Account and Plan your Customizable trip Now!',
+            //     style: TextStyle(
+            //       color: Colors.white,
+            //     ),
+            //   ),
+            // ),
             SizedBox(height: deviceSize.height * 0.03),
             Container(
               margin: EdgeInsets.all(deviceSize.width * 0.05),

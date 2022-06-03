@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import '../data/user_info_form.dart';
 
 class PersonInfo extends StatefulWidget {
-  const PersonInfo({Key? key}) : super(key: key);
+  final bool isEdit;
+  const PersonInfo({Key? key, required this.isEdit}) : super(key: key);
 
   @override
   State<PersonInfo> createState() => _PersonInfoState();

@@ -47,6 +47,10 @@ dependencies:
   dropdown_button2: ^1.4.0
   sliding_up_panel: ^2.0.0+1
   provider: ^6.0.3
+  image_picker: ^0.8.5+3
+  firebase_storage: ^10.2.17
+  dotted_border: ^2.0.0
+  shared_preferences: ^2.0.15
 
 dev_dependencies:
   flutter_test:

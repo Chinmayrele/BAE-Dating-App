@@ -10,7 +10,7 @@ import './home_page_screen.dart';
 
 class OtpRequest extends StatefulWidget {
   final FirebaseAuth auth;
-  final verificationId;
+  final String verificationId;
 
   const OtpRequest({
     Key? key,
@@ -42,6 +42,7 @@ class _OtpRequestState extends State<OtpRequest> {
       isLoading = true;
     });
     try {
+      if (widget.auth.currentUser != null) {}
       final authCredential =
           await widget.auth.signInWithCredential(phoneCredential);
       setState(() {
@@ -49,12 +50,12 @@ class _OtpRequestState extends State<OtpRequest> {
       });
 
       if (authCredential.user != null) {
-        isUserFirstTime
-            ? Navigator.push(
-                context, MaterialPageRoute(builder: (ctx) => const QueScreen()))
-            : Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (ctx) => const HomePageScreen(),
-              ));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (ctx) => const QueScreen()));
+      } else {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (ctx) => const HomePageScreen(),
+        ));
       }
     } on FirebaseException catch (e) {
       snackBar(e.message.toString());
@@ -72,10 +73,10 @@ class _OtpRequestState extends State<OtpRequest> {
           children: [
             const SizedBox(height: 100),
             SizedBox(
-              height: 100,
+              height: MediaQuery.of(context).size.height * 0.2,
               width: double.infinity,
               child: Image.asset(
-                'assets/images/bae_logo.jpeg',
+                'assets/images/bae_flogo.png',
                 // fit: BoxFit.cover,
               ),
             ),
@@ -195,11 +196,11 @@ class _OtpRequestState extends State<OtpRequest> {
                     otpEditingController.clear();
                   },
                 )),
-                Flexible(
-                    child: TextButton(
-                  child: const Text("Set Text"),
-                  onPressed: () {},
-                )),
+                // Flexible(
+                //     child: TextButton(
+                //   child: const Text("Set Text"),
+                //   onPressed: () {},
+                // )),
               ],
             )
           ],

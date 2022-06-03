@@ -702,9 +702,9 @@ class _QueScreenState extends State<QueScreen> {
                       fontWeight: FontWeight.bold,
                       fontSize: 17),
                 ),
-                onPressed: () {
+                onPressed: () async {
                   //FIREBASE LOGIC
-                  queAnsFill.addQueAnsInfo(QueAnsInfo(
+                  await queAnsFill.addQueAnsInfo(QueAnsInfo(
                     relationStatus: _lookStatus.toString(),
                     vacationStatus: _vacaStatus.toString(),
                     nightStatus: _nightStatus.toString(),
@@ -713,6 +713,7 @@ class _QueScreenState extends State<QueScreen> {
                     exerciseStatus: _exerciseStatus.toString(),
                     heightStatus: _htStatus.toString(),
                   ));
+
                   //NAVIGATE AFTER FIREBASE LOGIC
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
                       builder: (ctx) => const LocationPermi()));
