@@ -3,14 +3,17 @@ import 'package:bar_chat_dating_app/models/user_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geolocator/geolocator.dart';
 
 class InfoProviders with ChangeNotifier {
   final List<UserInfos> _userInfo = [];
   final List<UserInfos> _usersData = [];
+  // late UserInfos _userData;
   final List<QueAnsInfo> _queAnsInfo = [];
 
   List<UserInfos> get userInfo => [..._userInfo];
   List<UserInfos> get usersData => [..._usersData];
+  // UserInfos get userData => _userData;
   List<QueAnsInfo> get queAnsInfo => [..._queAnsInfo];
 
   Future<void> addUserProfileInfo(UserInfos info) async {
@@ -24,13 +27,18 @@ class InfoProviders with ChangeNotifier {
       "phoneNo": info.phoneNo,
       "gender": info.gender,
       "genderChoice": info.genderChoice,
+      "iLiked": info.iLiked,
+      "isViewed": info.isViewed,
+      "whoLikedMe": info.whoLikedMe,
+      "intersectionLikes": info.intersectionLikes,
+      "latitude": info.latitude,
+      "longitude": info.longitude,
       "age": info.age,
       "about": info.about,
       "interest": info.interest,
       "address": info.address,
       "imageUrls": info.imageUrls
     });
-    // _userInfo.add(info);
     notifyListeners();
   }
 
@@ -49,78 +57,89 @@ class InfoProviders with ChangeNotifier {
       "exerciseStatus": info.exerciseStatus,
       "heightStatus": info.heightStatus,
     });
-    _queAnsInfo.add(info);
+    // _queAnsInfo.add(info);
     notifyListeners();
   }
 
-  // Future<void> fetchSingleUserData(String userID) async {
-  //   print('USER ID FETCHING...');
-  //   FirebaseFirestore.instance.collection('profile').doc().snapshots().map(
-  //     (e) {
-  //       final users = UserInfos(
-  //         userId: e['userId'],
-  //         name: e['name'],
-  //         email: e['email'],
-  //         phoneNo: e['phoneNo'],
-  //         gender: e['gender'],
-  //         genderChoice: e['genderChoice'],
-  //         age: e['age'],
-  //         about: e['about'],
-  //         interest: e['interest'],
-  //         address: e['address'],
-  //         imageUrls: e['imageUrls'],
-  //       );
-  //       //IF GENDER && YOURSELF REMOVE CONDITION
-  //       if (users.userId != FirebaseAuth.instance.currentUser!.uid) {
-  //         _usersData.add(users);
-  //       }
-  //       notifyListeners();
-  //     },
-  //   );
-  //   notifyListeners();
-  // }
-
-  Future<void> fetchUsersData(String genderPreference) async {
-    print('12342353464565786786756545756585857857');
-    FirebaseFirestore.instance.collection('profile').snapshots().map(
-      (e) {
-        e.docs.map(
-          (e) {
-            print("PRINTING USER ID IN FETCH METHOD: ${e['userId']}");
-            final us = UserInfos(
-              userId: e['userId'],
-              name: e['name'],
-              email: e['email'],
-              phoneNo: e['phoneNo'],
-              gender: e['gender'],
-              genderChoice: e['genderChoice'],
-              age: e['age'],
-              about: e['about'],
-              interest: e['interest'],
-              address: e['address'],
-              imageUrls: e['imageUrls'],
-            );
-            _usersData.add(us);
-            //IF GENDER && YOURSELF REMOVE CONDITION
-            // if (us.gender.toLowerCase() == genderPreference.toLowerCase() &&
-            //     us.userId != FirebaseAuth.instance.currentUser!.uid) {
-            //   print('ONE USER ADDED: ${us.name}');
-            //   _usersData.add(us);
-            // }
-          },
-        );
-            notifyListeners();
-      },
-    );
+  Future<UserInfos> fetchSingleUserData(String userID) async {
+    print('USER ID FETCHING...');
+    final data = await FirebaseFirestore.instance
+        .collection('profile')
+        .doc(userID)
+        .get();
+    final e = data.data();
+    final userData = UserInfos(
+        userId: e!['userId'],
+        name: e['name'],
+        email: e['email'],
+        phoneNo: e['phoneNo'],
+        gender: e['gender'],
+        genderChoice: e['genderChoice'],
+        iLiked: e['iLiked'],
+        isViewed: e['isViewed'],
+        whoLikedMe: e['whoLikedMe'],
+        intersectionLikes: e['intersectionLikes'],
+        latitude: e['latitude'],
+        longitude: e['longitude'],
+        age: e['age'],
+        about: e['about'],
+        interest: e['interest'],
+        address: e['address'],
+        imageUrls: e['imageUrls']);
+    //IF GENDER && YOURSELF REMOVE CONDITION
+    // if (users.userId != FirebaseAuth.instance.currentUser!.uid) {
+    //   _usersData.add(users);
+    // }
+    return userData;
   }
 
-  Future<void> fetchQueAnsData() async {
+  Future<void> fetchUsersData(
+      String genderPreference, double lati, double longi) async {
+    print('12342353464565786786756545756585857857');
+    final data = await FirebaseFirestore.instance.collection('profile').get();
+    print("DATA SIZE IMP: ${data.size}");
+    print("DATA DOCS LENGTH: ${data.docs.length}");
+    final e = data.docs;
+    for (int i = 0; i < e.length; i++) {
+      final us = UserInfos(
+        userId: e[i]['userId'],
+        name: e[i]['name'],
+        email: e[i]['email'],
+        phoneNo: e[i]['phoneNo'],
+        gender: e[i]['gender'],
+        genderChoice: e[i]['genderChoice'],
+        iLiked: e[i]['iLiked'],
+        isViewed: e[i]['isViewed']??[],
+        whoLikedMe: e[i]['whoLikedMe'],
+        intersectionLikes: e[i]['intersectionLikes'],
+        latitude: e[i]['latitude'],
+        longitude: e[i]['longitude'],
+        age: e[i]['age'],
+        about: e[i]['about'],
+        interest: e[i]['interest'],
+        address: e[i]['address'],
+        imageUrls: e[i]['imageUrls'],
+      );
+      final distance =
+          Geolocator.distanceBetween(lati, longi, us.latitude, us.longitude);
+
+      //  IF GENDER && YOURSELF REMOVE CONDITION   && !_userInfo[0].isViewed.contains(us.userId)
+      if (us.gender.toLowerCase() == genderPreference.toLowerCase() &&
+          us.userId != FirebaseAuth.instance.currentUser!.uid &&
+          distance < 100000 && !_userInfo[0].isViewed.contains(us.userId)) {
+        _usersData.add(us);
+      }
+    }
+    notifyListeners();
+  }
+
+  Future<void> fetchQueAnsData(String useId) async {
     print('12342353464565786786756545756585857857');
     final data = await FirebaseFirestore.instance
         .collection('profile')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .doc(useId)
         .collection('queAnsSec')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .doc(useId)
         .get();
     final e = data.data();
     final userInf = QueAnsInfo(
@@ -135,10 +154,9 @@ class InfoProviders with ChangeNotifier {
     print(data.data().toString());
     print('///////////////////');
     _queAnsInfo.add(userInf);
-    print(_queAnsInfo[0].vacationStatus);
-
+    print(
+        "QUE ANS FETCH METHOD PROVIDER VACATION STATUS: ${_queAnsInfo[0].vacationStatus}");
     notifyListeners();
-    // });
   }
 
   Future<void> fetchUSerProfileData() async {
@@ -155,6 +173,12 @@ class InfoProviders with ChangeNotifier {
         phoneNo: e['phoneNo'],
         gender: e['gender'],
         genderChoice: e['genderChoice'],
+        iLiked: e['iLiked'],
+        isViewed: e['isViewed'],
+        whoLikedMe: e['whoLikedMe'],
+        intersectionLikes: e['intersectionLikes'],
+        latitude: e['latitude'],
+        longitude: e['longitude'],
         age: e['age'],
         about: e['about'],
         interest: e['interest'],
@@ -163,9 +187,7 @@ class InfoProviders with ChangeNotifier {
     print(data.data().toString());
     print('///////////////////');
     _userInfo.add(userInf);
-    print(_userInfo[0].name);
-
+    print("FETCH PROFILE USER DATA PROVIDER NAME: ${_userInfo[0].name}");
     notifyListeners();
-    // });
   }
 }

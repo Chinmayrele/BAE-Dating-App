@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 // import 'package:flutter_tinder_clone_app/screens/otp_screen.dart';
 
 import './otp_screen.dart';
@@ -48,7 +50,7 @@ class _PhoneLoginState extends State<PhoneLogin> {
               ),
               const SizedBox(height: 20),
               Container(
-                height: MediaQuery.of(context).size.height * 0.1,
+                height: MediaQuery.of(context).size.height * 0.15,
                 width: double.infinity,
                 margin: const EdgeInsets.only(bottom: 15),
                 child: Image.asset(
@@ -88,16 +90,33 @@ class _PhoneLoginState extends State<PhoneLogin> {
               const SizedBox(height: 25),
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: TextField(
+                child: IntlPhoneField(
+                  controller: myNumberController,
+                  dropdownTextStyle: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                   style: const TextStyle(
                       fontSize: 20,
                       color: Colors.white,
                       fontWeight: FontWeight.bold),
-                  controller: myNumberController,
                   cursorColor: Colors.pink,
                   keyboardType: TextInputType.number,
                   keyboardAppearance: Brightness.dark,
                   decoration: InputDecoration(
+                    focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(40),
+                        borderSide: const BorderSide(
+                          color: Colors.pink,
+                          width: 2,
+                        )),
+                    errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(40),
+                        borderSide: const BorderSide(
+                          color: Colors.pink,
+                          width: 2,
+                        )),
                     fillColor: Colors.white24,
                     filled: true,
                     focusedBorder: OutlineInputBorder(
@@ -124,16 +143,67 @@ class _PhoneLoginState extends State<PhoneLogin> {
                         fontSize: 18),
                     prefixIcon: const Icon(Icons.phone_forwarded_outlined,
                         color: Colors.white),
-                    prefixText: '  +91 ',
-                    prefixStyle: const TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold),
+                    // prefixText: '  +91 ',
+                    // prefixStyle: const TextStyle(
+                    //     fontSize: 20,
+                    //     color: Colors.white,
+                    //     fontWeight: FontWeight.bold),
                   ),
+                  onChanged: (phone) {
+                    print(phone.completeNumber);
+                  },
+                  onCountryChanged: (country) {
+                    print('Country changed to: ' + country.name);
+                  },
                 ),
+                // TextField(
+                //   style: const TextStyle(
+                //       fontSize: 20,
+                //       color: Colors.white,
+                //       fontWeight: FontWeight.bold),
+                //   controller: myNumberController,
+                //   maxLength: 10,
+                //   maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                //   cursorColor: Colors.pink,
+                //   keyboardType: TextInputType.number,
+                //   keyboardAppearance: Brightness.dark,
+                //   decoration: InputDecoration(
+                //     fillColor: Colors.white24,
+                //     filled: true,
+                //     focusedBorder: OutlineInputBorder(
+                //         borderRadius: BorderRadius.circular(40),
+                //         borderSide: const BorderSide(
+                //           color: Colors.pink,
+                //           width: 2,
+                //         )),
+                //     enabledBorder: OutlineInputBorder(
+                //         borderRadius: BorderRadius.circular(40),
+                //         borderSide: const BorderSide(
+                //           color: Colors.pink,
+                //           width: 2,
+                //         )),
+                //     contentPadding: const EdgeInsets.symmetric(
+                //         vertical: 15, horizontal: 15),
+                //     floatingLabelAlignment: FloatingLabelAlignment.start,
+                //     floatingLabelStyle: const TextStyle(
+                //         color: Colors.pink, fontWeight: FontWeight.normal),
+                //     label: const Text('Phone Number'),
+                //     labelStyle: const TextStyle(
+                //         fontWeight: FontWeight.normal,
+                //         color: Colors.white,
+                //         fontSize: 18),
+                //     prefixIcon: const Icon(Icons.phone_forwarded_outlined,
+                //         color: Colors.white),
+                //     prefixText: '  +91 ',
+                //     prefixStyle: const TextStyle(
+                //         fontSize: 20,
+                //         color: Colors.white,
+                //         fontWeight: FontWeight.bold),
+                //   ),
+                // ),
               ),
               // SizedBox(height: 40),
-              SizedBox(height: MediaQuery.of(context).size.height * 0.26),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.21),
               Container(
                 height: 50,
                 width: double.infinity,
@@ -179,7 +249,12 @@ class _PhoneLoginState extends State<PhoneLogin> {
                           );
                         });
                       },
-                      codeAutoRetrievalTimeout: (v) {},
+                      codeAutoRetrievalTimeout: (v) {
+                        snackBar(v.toString());
+                        setState(() {
+                          isLoading = false;
+                        });
+                      },
                     );
                   },
                   style: ElevatedButton.styleFrom(

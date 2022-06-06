@@ -50,7 +50,7 @@ class _OtpRequestState extends State<OtpRequest> {
       });
 
       if (authCredential.user != null) {
-        Navigator.push(
+        Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (ctx) => const QueScreen()));
       } else {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -163,23 +163,23 @@ class _OtpRequestState extends State<OtpRequest> {
                       signInWithPhoneCredential(phoneCredential);
                     },
                     child: Center(
-                        child: Text(
-                      "VERIFY".toUpperCase(),
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
-                    )),
+                        child: isLoading
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : Text(
+                                "VERIFY".toUpperCase(),
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold),
+                              )),
                   ),
                 ),
                 decoration: BoxDecoration(
                   color: Colors.pink,
                   borderRadius: BorderRadius.circular(5),
                   boxShadow: const [
-                    // BoxShadow(
-                    //     color: Colors.pink,
-                    //     offset: Offset(1, -2),
-                    //     blurRadius: 5),
                     BoxShadow(
                         color: Colors.pink,
                         offset: Offset(-1, 2),

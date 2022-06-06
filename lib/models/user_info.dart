@@ -6,6 +6,12 @@ class UserInfos {
   final String gender;
   final String genderChoice;
   final int age;
+  final List<dynamic> iLiked;
+  final List<dynamic> isViewed;
+  final List<dynamic> whoLikedMe;
+  final List<dynamic> intersectionLikes;
+  final double latitude;
+  final double longitude;
   final String about;
   final String interest;
   final String address;
@@ -18,6 +24,12 @@ class UserInfos {
     required this.phoneNo,
     required this.gender,
     required this.genderChoice,
+    required this.iLiked,
+    required this.isViewed,
+    required this.whoLikedMe,
+    required this.intersectionLikes,
+    required this.latitude,
+    required this.longitude,
     required this.age,
     required this.about,
     required this.interest,

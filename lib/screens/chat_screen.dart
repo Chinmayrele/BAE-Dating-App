@@ -1,6 +1,8 @@
+import 'package:bar_chat_dating_app/models/user_info.dart';
+import 'package:bar_chat_dating_app/providers/info_provider.dart';
+import 'package:bar_chat_dating_app/screens/chatting_screen.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_tinder_clone_app/common/color_constants.dart';
-// import 'package:flutter_tinder_clone_app/data/chats_json.dart';
+import 'package:provider/provider.dart';
 
 import '../common/color_constants.dart';
 import '../data/chats_json.dart';
@@ -8,20 +10,47 @@ import '../data/chats_json.dart';
 /*
 Title:ChatScreen
 Purpose:ChatScreen
-Created By:Kalpesh Khandla
+Created By:Chinmay Rele
 */
 
 class ChatScreen extends StatefulWidget {
+  const ChatScreen({Key? key}) : super(key: key);
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  late InfoProviders result;
+  late List<dynamic> intersectionUid;
+  List<UserInfos> intersectionUserLikes = [];
+  bool isLoading = true;
+  int indexR = 0;
+  @override
+  void initState() {
+    result = Provider.of<InfoProviders>(context, listen: false);
+    result.fetchUSerProfileData().then((value) {
+      intersectionUid = result.userInfo[0].intersectionLikes;
+      for (int i = 0; i < intersectionUid.length; i++) {
+        result.fetchSingleUserData(intersectionUid[i]).then((value) {
+          intersectionUserLikes.add(value);
+        });
+      }
+      setState(() {
+        isLoading = false;
+      });
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: ColorConstants.kWhite,
-      body: getBody(),
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : getBody(),
     );
   }
 
@@ -34,7 +63,7 @@ class _ChatScreenState extends State<ChatScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Text(
+              const Text(
                 "Messages",
                 style: TextStyle(
                   fontSize: 18,
@@ -58,10 +87,10 @@ class _ChatScreenState extends State<ChatScreen> {
             ],
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
-        Divider(
+        const Divider(
           thickness: 0.8,
         ),
         Padding(
@@ -86,16 +115,16 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
         ),
-        Divider(
+       const  Divider(
           thickness: 0.8,
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
+           const  Padding(
               padding: const EdgeInsets.only(left: 15),
               child: Text(
                 "New Matches",
@@ -105,7 +134,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     color: ColorConstants.kPrimary),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             SingleChildScrollView(
@@ -173,7 +202,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             ],
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         SizedBox(
@@ -190,108 +219,146 @@ class _ChatScreenState extends State<ChatScreen> {
                 })),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 15),
-              child: Column(
-                children: List.generate(userMessages.length, (index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
-                    child: Row(
-                      children: <Widget>[
-                        Container(
-                          width: 70,
-                          height: 70,
-                          child: Stack(
+            intersectionUserLikes.isEmpty
+                ? const Center(
+                    child: Text(
+                      'Looks Like No One Liked You!!!',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                  )
+                : Padding(
+                  padding: const EdgeInsets.only(left: 15),
+                  child: Column(
+                    children: List.generate(intersectionUserLikes.length,
+                        (index) {
+                      indexR = index;
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                      builder: (ctx) => ChattingScreen(
+                            chaterUserId:
+                                intersectionUserLikes[index].userId,
+                          )));
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 20),
+                          child: Row(
                             children: <Widget>[
-                              userMessages[index]['story']
-                                  ? Container(
-                                      decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                              color: ColorConstants.kPrimary,
-                                              width: 3)),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(3.0),
-                                        child: Container(
-                                          width: 70,
-                                          height: 70,
-                                          decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              image: DecorationImage(
-                                                  image: AssetImage(
-                                                      userMessages[index]
-                                                          ['img']),
-                                                  fit: BoxFit.cover)),
-                                        ),
-                                      ),
-                                    )
-                                  : Container(
-                                      width: 65,
-                                      height: 65,
-                                      decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          image: DecorationImage(
-                                              image: AssetImage(
-                                                  userMessages[index]['img']),
-                                              fit: BoxFit.cover)),
+                              SizedBox(
+                                width: 70,
+                                height: 70,
+                                child: Stack(
+                                  children: <Widget>[
+                                    userMessages[index]['story']
+                                        ? Container(
+                                            decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                    color: ColorConstants
+                                                        .kPrimary,
+                                                    width: 3)),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(3.0),
+                                              child: Container(
+                                                width: 70,
+                                                height: 70,
+                                                decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    image: DecorationImage(
+                                                        image: AssetImage(
+                                                            intersectionUserLikes[
+                                                                    index]
+                                                                .imageUrls[0]
+                                                            // userMessages[index]
+                                                            //     ['img'],
+                                                            ),
+                                                        fit: BoxFit.cover)),
+                                              ),
+                                            ),
+                                          )
+                                        : Container(
+                                            width: 65,
+                                            height: 65,
+                                            decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                image: DecorationImage(
+                                                    image: AssetImage(
+                                                        intersectionUserLikes[
+                                                                index]
+                                                            .imageUrls[0]
+                                                        // userMessages[index]
+                                                        //     ['img'],
+                                                        ),
+                                                    fit: BoxFit.cover)),
+                                          ),
+                                    userMessages[index]['online']
+                                        ? Positioned(
+                                            top: 48,
+                                            left: 52,
+                                            child: Container(
+                                              width: 20,
+                                              height: 20,
+                                              decoration: BoxDecoration(
+                                                  color:
+                                                      ColorConstants.kGreen,
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
+                                                      color: ColorConstants
+                                                          .kWhite,
+                                                      width: 3)),
+                                            ),
+                                          )
+                                        : Container()
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    intersectionUserLikes[index].name,
+                                    // userMessages[index]['name'],
+                                    style: const TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  SizedBox(
+                                    width: MediaQuery.of(context).size.width -
+                                        135,
+                                    child: Text(
+                                      userMessages[index]['message'] +
+                                          " - " +
+                                          userMessages[index]['created_at'],
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          color: ColorConstants.kWhite
+                                              .withOpacity(0.8)),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                              userMessages[index]['online']
-                                  ? Positioned(
-                                      top: 48,
-                                      left: 52,
-                                      child: Container(
-                                        width: 20,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                            color: ColorConstants.kGreen,
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                                color: ColorConstants.kWhite,
-                                                width: 3)),
-                                      ),
-                                    )
-                                  : Container()
+                                  )
+                                ],
+                              )
                             ],
                           ),
                         ),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              userMessages[index]['name'],
-                              style: TextStyle(
-                                  fontSize: 17, fontWeight: FontWeight.w500),
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width - 135,
-                              child: Text(
-                                userMessages[index]['message'] +
-                                    " - " +
-                                    userMessages[index]['created_at'],
-                                style: TextStyle(
-                                    fontSize: 15,
-                                    color:
-                                        ColorConstants.kWhite.withOpacity(0.8)),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                  );
-                }),
-              ),
-            )
+                      );
+                    }),
+                  ),
+                )
           ],
         )
       ],

@@ -20,22 +20,15 @@ class StartScreen extends StatelessWidget {
         body: Column(
           children: [
             SizedBox(height: deviceSize.height * 0.1),
-            //  CircleAvatar(
-            //   radius: 50,
-            //   backgroundColor: Colors.transparent,
-            //   // foregroundColor: Colors.transparent,
-            //   backgroundImage: AssetImage('assets/images/tttt.png'),
-            // ),
-            //  SizedBox(height: deviceSize.height*0.02),
             SizedBox(
-              height: deviceSize.height * 0.14,
+              height: deviceSize.height * 0.16,
               width: double.infinity,
               child: Image.asset(
                 'assets/images/bae_flogo.png',
                 // fit: BoxFit.cover,
               ),
             ),
-            SizedBox(height: deviceSize.height * 0.2),
+            SizedBox(height: deviceSize.height * 0.16),
             const Text(
               '𝓦𝓔𝓛𝓒𝓞𝓜𝓔!',
               style: TextStyle(
@@ -44,19 +37,7 @@ class StartScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   fontSize: 35),
             ),
-            SizedBox(height: deviceSize.height * 0.02),
-            // Container(
-            //   margin: EdgeInsets.only(left: deviceSize.width * 0.2),
-            //   width: deviceSize.width * 0.8,
-            //   child: const Text(
-            //     'Create an Account and Get Started Now!',
-            //     // 'Create an Account and Plan your Customizable trip Now!',
-            //     style: TextStyle(
-            //       color: Colors.white,
-            //     ),
-            //   ),
-            // ),
-            SizedBox(height: deviceSize.height * 0.03),
+            SizedBox(height: deviceSize.height * 0.05),
             Container(
               margin: EdgeInsets.all(deviceSize.width * 0.05),
               width: double.infinity,

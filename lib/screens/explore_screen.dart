@@ -1,20 +1,19 @@
 import 'package:bar_chat_dating_app/providers/info_provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter_tindercard/flutter_tindercard.dart';
 
 import '../common/color_constants.dart';
-import '../data/explore_json.dart';
-import '../data/icons.dart';
 import '../data/panel_widget.dart';
 import '../models/user_info.dart';
 
 /*
 Title:ExploreScreen
 Purpose:ExploreScreen
-Created By:Kalpesh Khandla
+Created By:Chinmay Rele
 */
 
 class ExploreScreen extends StatefulWidget {
@@ -27,12 +26,17 @@ class _ExploreScreenState extends State<ExploreScreen>
     with TickerProviderStateMixin {
   final PanelController panelController = PanelController();
   CardController? controller;
-  late InfoProviders userData;
+  // late InfoProviders userData;
   late InfoProviders result;
   late List<UserInfos> userProfileDataResult;
   late List<UserInfos> usersDataResult;
   bool isLoading = true;
-  bool isFirstLoading = true;
+  List iLiked = [];
+  List tempILiked = [];
+  List isViewed = [];
+  List whoLikedMe = [];
+  List intersectionOfLikes = [];
+  // bool isFirstLoading = true;
 
   List<UserInfos> itemsTemp = [];
   int itemLength = 0;
@@ -44,22 +48,31 @@ class _ExploreScreenState extends State<ExploreScreen>
     result = Provider.of<InfoProviders>(context, listen: false);
     result.fetchUSerProfileData().then((_) {
       userProfileDataResult = result.userInfo;
+      iLiked = userProfileDataResult[0].iLiked;
+      isViewed = userProfileDataResult[0].isViewed;
+      whoLikedMe = userProfileDataResult[0].whoLikedMe;
+      intersectionOfLikes = userProfileDataResult[0].intersectionLikes;
       print("LENGTH OF USERPROFILE DATA:  ${userProfileDataResult.length}");
-      isFirstLoading = false;
       print('EXPLORE SCREEN INIT STATE 1st PRINT');
       print("GENDER CHOICE USER: ${userProfileDataResult[0].genderChoice}");
       result
-          .fetchUsersData(userProfileDataResult[0].genderChoice)
+          .fetchUsersData(
+        userProfileDataResult[0].genderChoice,
+        userProfileDataResult[0].latitude,
+        userProfileDataResult[0].longitude,
+      )
           .then((_) {
         print('FETCH USER DATA ENTER THEN VALUE');
+        if (result.usersData.isNotEmpty) {
+          print('LATITUDE: ${result.usersData[0].latitude}');
+          print('LONGITUDE: ${result.usersData[0].longitude}');
+        }
+        itemsTemp = result.usersData;
+        itemLength = result.usersData.length;
+        print("ITEM LENGTH: $itemLength");
         setState(() {
-          print('122334wffvfgy64564ghfg');
-          itemsTemp = result.usersData;
-          itemLength = result.usersData.length;
-          print("ITEM LENGTH: $itemLength");
           isLoading = false;
         });
-        // });
         print('888888888888888888888888');
       });
 
@@ -70,15 +83,15 @@ class _ExploreScreenState extends State<ExploreScreen>
   }
 
   var indexR = 0;
+  // String useId = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: ColorConstants.kWhite,
-      // appBar: AppBar(title: Text('Find People Who Match With')),
-      body: (isFirstLoading && isLoading)
-          ? const CircularProgressIndicator()
+      body: (isLoading)
+          ? const Center(child: CircularProgressIndicator())
           : SlidingUpPanel(
+              backdropTapClosesPanel: true,
               color: Colors.black,
               controller: panelController,
               minHeight: 0,
@@ -91,11 +104,29 @@ class _ExploreScreenState extends State<ExploreScreen>
               body: getBody(panelController),
               panelBuilder: (controller) => PanelWidget(
                 controller: controller,
-                userProfileDataResult: userProfileDataResult,
-                index: indexR,
+                userProfileDataResult: itemLength == 0
+                    ? UserInfos(
+                        userId: '',
+                        name: 'name',
+                        email: 'email',
+                        phoneNo: 'phoneNo',
+                        gender: 'gender',
+                        genderChoice: 'genderChoice',
+                        iLiked: [],
+                        isViewed: [],
+                        whoLikedMe: [],
+                        intersectionLikes: [],
+                        latitude: 0.0,
+                        longitude: 0.0,
+                        age: 0,
+                        about: 'about',
+                        interest: 'interest',
+                        address: 'address',
+                        imageUrls: [])
+                    : itemsTemp[indexR + 1],
+                // useId: useId,
               ),
             ),
-      // bottomSheet: getBottomSheet(),
     );
   }
 
@@ -106,55 +137,31 @@ class _ExploreScreenState extends State<ExploreScreen>
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         // SizedBox(height: size.height * 0.06),
-        RichText(
-            textAlign: TextAlign.center,
-            text: TextSpan(
-                text: 'Find People Who Can ',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 19,
-                ),
-                children: [
-                  TextSpan(
-                    text: '𝓜𝓪𝓽𝓬𝓱',
-                    style: TextStyle(
-                        color: Colors.red.withOpacity(0.7),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 21),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.85,
+          child: RichText(
+              textAlign: TextAlign.center,
+              text: const TextSpan(
+                  text: 'Find People Who Can ',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 19,
                   ),
-                  const TextSpan(
-                    text: ' With You',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 19),
-                  ),
-                ])),
-        // Row(
-        //   children: [
-        //     SizedBox(width: size.width * 0.18),
-        //     const Text(
-        //       'Find People Who Can ',
-        //       style: TextStyle(
-        //           color: Colors.white,
-        //           fontWeight: FontWeight.bold,
-        //           fontSize: 19),
-        //     ),
-        //     Text(
-        //       '𝓜𝓪𝓽𝓬𝓱',
-        //       style: TextStyle(
-        //           color: Colors.red.withOpacity(0.7),
-        //           fontWeight: FontWeight.bold,
-        //           fontSize: 21),
-        //     )
-        //   ],
-        // ),
-        // const Text(
-        //   'With You!',
-        //   style: TextStyle(
-        //       color: Colors.white, fontWeight: FontWeight.bold, fontSize: 19),
-        // ),
+                  children: [
+                    TextSpan(
+                      text: '𝓜𝓪𝓽𝓬𝓱',
+                      style: TextStyle(color: Colors.pink, fontSize: 22),
+                    ),
+                    TextSpan(
+                      text: ' With You',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 19),
+                    ),
+                  ])),
+        ),
         SizedBox(
           height: size.height * 0.75,
           child: TinderSwapCard(
@@ -164,8 +171,8 @@ class _ExploreScreenState extends State<ExploreScreen>
             minWidth: MediaQuery.of(context).size.width * 0.75,
             minHeight: MediaQuery.of(context).size.height * 0.6,
             cardBuilder: (context, index) {
-              indexR = index;
-
+              // indexR = index;
+              // useId = itemsTemp[index].userId;
               return Container(
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
@@ -215,7 +222,7 @@ class _ExploreScreenState extends State<ExploreScreen>
                                     end: Alignment.topCenter),
                               ),
                               child: Padding(
-                                padding: EdgeInsets.all(15),
+                                padding: const EdgeInsets.all(15),
                                 child: Row(
                                   children: [
                                     SizedBox(
@@ -346,9 +353,12 @@ class _ExploreScreenState extends State<ExploreScreen>
                                       child: InkWell(
                                         onTap: () {
                                           setState(() {
-                                            panelController.isPanelOpen
-                                                ? panelController.close()
-                                                : panelController.open();
+                                            if (panelController.isPanelOpen) {
+                                              panelController.close();
+                                            } else {
+                                              indexR = index;
+                                              panelController.open();
+                                            }
                                           });
                                         },
                                         child: SizedBox(
@@ -376,10 +386,12 @@ class _ExploreScreenState extends State<ExploreScreen>
               );
             },
             cardController: controller,
-            swipeUpdateCallback: (DragUpdateDetails details, Alignment align) {
+            swipeUpdateCallback:
+                (DragUpdateDetails details, Alignment align) async {
               /// Get swiping card's alignment
-              if (align.x < -4) {
+              if (align.x < -5) {
                 //Card is LEFT swiping
+
                 showDialog(
                     context: context,
                     builder: (context) {
@@ -396,8 +408,29 @@ class _ExploreScreenState extends State<ExploreScreen>
                             )),
                       );
                     });
-              } else if (align.x > 4) {
+                isViewed.add(itemsTemp[indexR].userId);
+                indexR++;
+
+                await FirebaseFirestore.instance
+                    .collection('profile')
+                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                    .update({
+                  "isViewed": isViewed,
+                });
+                // setState(() {});
+                //   .add({
+                // "isLiked": "No",
+                // "userId": itemsTemp[indexR].userId,
+                // });
+                panelController.close();
+              } else if (align.x > 5) {
                 //Card is RIGHT swiping
+                isViewed.add(itemsTemp[indexR].userId);
+                iLiked.add(itemsTemp[indexR].userId);
+                tempILiked = iLiked;
+                whoLikedMe.add(FirebaseAuth.instance.currentUser!.uid);
+                iLiked.removeWhere((element) => !whoLikedMe.contains(element));
+                intersectionOfLikes = iLiked;
                 showDialog(
                     context: context,
                     builder: (context) {
@@ -414,58 +447,65 @@ class _ExploreScreenState extends State<ExploreScreen>
                             )),
                       );
                     });
+                print('INDEX IF SWIPED RIGHT $indexR');
+
+                print("I LIKED VARIABLES STORED: ${tempILiked[0]}");
+                await FirebaseFirestore.instance
+                    .collection('profile')
+                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                    .update({
+                  "iLiked": tempILiked,
+                  "isViewed": isViewed,
+                  "intersectionLikes": intersectionOfLikes,
+                });
+                 await FirebaseFirestore.instance
+                    .collection('profile')
+                    .doc(itemsTemp[indexR].userId)
+                    .update({
+                  "whoLikedMe": whoLikedMe,
+                });
+                indexR++;
+                // setState(() {});
               }
             },
             swipeCompleteCallback:
                 (CardSwipeOrientation orientation, int index) {
               /// Get orientation & index of swiped card!
-              if (index == (itemsTemp.length - 1)) {
+              if (index == (itemsTemp.length)) {
+                // showDialog(
+                //     context: context,
+                //     builder: (context) {
+                //       // Future.delayed(const Duration(seconds: 2), () {
+                //       //   Navigator.of(context).pop(true);
+                //       // });
+                //       return Center(
+                //         child: SizedBox(
+                //           width: size.width * 0.5,
+                //           height: size.height * 0.2,
+                //           child: const Text(
+                //             'No More Profiles Found!!',
+                //             style: TextStyle(
+                //                 color: Colors.white,
+                //                 fontWeight: FontWeight.bold),
+                //           ),
+                //         ),
+                //       );
+                //     });
                 setState(() {
-                  itemLength = itemsTemp.length - 1;
+                  const Center(
+                    child: Text(
+                      'No More Profiles Found!!',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  );
+                  // itemLength = itemsTemp.length - 1;
                 });
               }
             },
           ),
         ),
       ],
-    );
-  }
-
-  Widget getBottomSheet() {
-    var size = MediaQuery.of(context).size;
-    return Container(
-      width: size.width,
-      height: 120,
-      decoration: const BoxDecoration(color: ColorConstants.kWhite),
-      child: Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: List.generate(item_icons.length, (index) {
-            return Container(
-              width: item_icons[index]['size'],
-              height: item_icons[index]['size'],
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: ColorConstants.kWhite,
-                  boxShadow: [
-                    BoxShadow(
-                      color: ColorConstants.kBlack.withOpacity(0.1),
-                      spreadRadius: 5,
-                      blurRadius: 10,
-                      // changes position of shadow
-                    ),
-                  ]),
-              child: Center(
-                child: SvgPicture.asset(
-                  item_icons[index]['icon'],
-                  width: item_icons[index]['icon_size'],
-                ),
-              ),
-            );
-          }),
-        ),
-      ),
     );
   }
 }

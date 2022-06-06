@@ -9,12 +9,19 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-// import 'package:flutter_tinder_clone_app/models/user_info.dart';
 
+import '../global/profile_list.dart';
+import '../global/title_text.dart';
 import '../models/user_info.dart';
 
 class UserInfoForm extends StatefulWidget {
-  const UserInfoForm({Key? key}) : super(key: key);
+  final double latitude;
+  final double longitude;
+  UserInfoForm({
+    Key? key,
+    this.latitude = 0,
+    this.longitude = 0,
+  }) : super(key: key);
 
   @override
   State<UserInfoForm> createState() => _UserInfoFormState();
@@ -29,22 +36,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
   File? _imageFile;
   UploadTask? task;
   List<String> imageUrlsUser = [];
-
-  List<String> items = [
-    'Male',
-    'Female',
-    'Other',
-  ];
-  List<String> ages = [
-    '20',
-    '21',
-    '22',
-    '23',
-    '24',
-    '25',
-    '26',
-    '27',
-  ];
+  bool isLoading = false;
 
   var _editedProfile = UserInfos(
     userId: FirebaseAuth.instance.currentUser!.uid,
@@ -53,27 +45,18 @@ class _UserInfoFormState extends State<UserInfoForm> {
     phoneNo: '',
     gender: '',
     genderChoice: '',
+    iLiked: [],
+    isViewed: [],
+    whoLikedMe: [],
+    intersectionLikes: [],
+    latitude: 0,
+    longitude: 0,
     age: 0,
     about: '',
     interest: '',
     address: '',
     imageUrls: [],
   );
-
-  titleText(String text, bool isRequired) {
-    return Container(
-      margin: const EdgeInsets.only(left: 25, bottom: 8, top: 15),
-      child: RichText(
-          text: TextSpan(
-              text: text,
-              style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold),
-              children: [
-            if (isRequired)
-              const TextSpan(text: ' *', style: TextStyle(color: Colors.red)),
-          ])),
-    );
-  }
 
   Future<void> getPicture() async {
     try {
@@ -100,6 +83,9 @@ class _UserInfoFormState extends State<UserInfoForm> {
     //Firebase Logic
     //FIREBASE IMAGE STORAGE LOGIC
     try {
+      setState(() {
+        isLoading = true;
+      });
       if (_imageFile != null) {
         final fileName = _imageFile!.path;
         final destination = 'files/$fileName';
@@ -117,6 +103,12 @@ class _UserInfoFormState extends State<UserInfoForm> {
             phoneNo: _editedProfile.phoneNo,
             gender: _editedProfile.gender,
             genderChoice: _editedProfile.genderChoice,
+            iLiked: _editedProfile.iLiked,
+            isViewed: _editedProfile.isViewed,
+            whoLikedMe: _editedProfile.whoLikedMe,
+            intersectionLikes: _editedProfile.intersectionLikes,
+            latitude: _editedProfile.latitude,
+            longitude: _editedProfile.longitude,
             age: _editedProfile.age,
             about: _editedProfile.about,
             interest: _editedProfile.interest,
@@ -132,9 +124,12 @@ class _UserInfoFormState extends State<UserInfoForm> {
       print('Error Uploading: $e');
     }
     await profileUserInfo.addUserProfileInfo(_editedProfile);
+    setState(() {
+      isLoading = false;
+    });
     //Navigate after Completeing Firebase Logic
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (ctx) => const HomePageScreen()));
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (ctx) => const HomePageScreen()));
   }
 
   @override
@@ -227,7 +222,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                 floatingLabelBehavior: FloatingLabelBehavior.never,
                 hintText: 'Name',
                 hintStyle: const TextStyle(
-                    color: Colors.white, fontSize: 15, wordSpacing: 2),
+                    color: Colors.white24, fontSize: 15, wordSpacing: 2),
                 fillColor: Colors.white24,
                 filled: true,
                 // suffixIcon: const Icon(Icons.mic, color: Colors.grey),
@@ -246,6 +241,12 @@ class _UserInfoFormState extends State<UserInfoForm> {
                   phoneNo: _editedProfile.phoneNo,
                   gender: _editedProfile.gender,
                   genderChoice: _editedProfile.genderChoice,
+                  iLiked: _editedProfile.iLiked,
+                  isViewed: _editedProfile.isViewed,
+                  whoLikedMe: _editedProfile.whoLikedMe,
+                  intersectionLikes: _editedProfile.intersectionLikes,
+                  latitude: _editedProfile.latitude,
+                  longitude: _editedProfile.longitude,
                   age: _editedProfile.age,
                   about: _editedProfile.about,
                   interest: _editedProfile.interest,
@@ -274,7 +275,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                 floatingLabelBehavior: FloatingLabelBehavior.never,
                 hintText: 'Email',
                 hintStyle: const TextStyle(
-                    color: Colors.white, fontSize: 15, wordSpacing: 2),
+                    color: Colors.white24, fontSize: 15, wordSpacing: 2),
                 fillColor: Colors.white24,
                 filled: true,
                 suffixIcon:
@@ -298,6 +299,12 @@ class _UserInfoFormState extends State<UserInfoForm> {
                   phoneNo: _editedProfile.phoneNo,
                   gender: _editedProfile.gender,
                   genderChoice: _editedProfile.genderChoice,
+                  iLiked: _editedProfile.iLiked,
+                  isViewed: _editedProfile.isViewed,
+                  whoLikedMe: _editedProfile.whoLikedMe,
+                  intersectionLikes: _editedProfile.intersectionLikes,
+                  latitude: _editedProfile.latitude,
+                  longitude: _editedProfile.longitude,
                   age: _editedProfile.age,
                   about: _editedProfile.about,
                   interest: _editedProfile.interest,
@@ -330,7 +337,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                 floatingLabelBehavior: FloatingLabelBehavior.never,
                 hintText: 'Phone Number',
                 hintStyle: const TextStyle(
-                    color: Colors.white, fontSize: 15, wordSpacing: 2),
+                    color: Colors.white24, fontSize: 15, wordSpacing: 2),
                 fillColor: Colors.white24,
                 filled: true,
                 suffixIcon: const Icon(Icons.phone, color: Colors.grey),
@@ -351,6 +358,12 @@ class _UserInfoFormState extends State<UserInfoForm> {
                   phoneNo: val.toString(),
                   gender: _editedProfile.gender,
                   genderChoice: _editedProfile.genderChoice,
+                  iLiked: _editedProfile.iLiked,
+                  isViewed: _editedProfile.isViewed,
+                  whoLikedMe: _editedProfile.whoLikedMe,
+                  intersectionLikes: _editedProfile.intersectionLikes,
+                  latitude: _editedProfile.latitude,
+                  longitude: _editedProfile.longitude,
                   age: _editedProfile.age,
                   about: _editedProfile.about,
                   interest: _editedProfile.interest,
@@ -382,7 +395,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                                   style: TextStyle(
                                     fontSize: 15,
                                     wordSpacing: 2,
-                                    color: Colors.white,
+                                    color: Colors.white24,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -464,7 +477,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                                   style: TextStyle(
                                     fontSize: 15,
                                     wordSpacing: 2,
-                                    color: Colors.white,
+                                    color: Colors.white24,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -528,129 +541,6 @@ class _UserInfoFormState extends State<UserInfoForm> {
                 )
               ],
             ),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     Column(
-            //       crossAxisAlignment: CrossAxisAlignment.start,
-            //       children: [
-            //         titleText('Gender', true),
-            //         SizedBox(
-            //           width: 150,
-            //           child: TextFormField(
-            //             style:
-            //                 const TextStyle(color: Colors.white, fontSize: 16),
-            //             // controller: _mySearched,
-            //             cursorHeight: 22,
-            //             // autofocus: true,
-            //             cursorColor: Colors.pink,
-            //             decoration: InputDecoration(
-            //               enabledBorder: OutlineInputBorder(
-            //                 borderSide:
-            //                     const BorderSide(color: Colors.pink, width: 2),
-            //                 borderRadius: BorderRadius.circular(30),
-            //               ),
-            //               contentPadding: const EdgeInsets.only(left: 25),
-            //               focusedBorder: OutlineInputBorder(
-            //                   borderSide: const BorderSide(
-            //                       color: Colors.pink, width: 2),
-            //                   borderRadius: BorderRadius.circular(30)),
-            //               floatingLabelBehavior: FloatingLabelBehavior.never,
-            //               hintText: 'Gender',
-            //               hintStyle: const TextStyle(
-            //                   color: Colors.white,
-            //                   fontSize: 15,
-            //                   wordSpacing: 2),
-            //               fillColor: Colors.white24,
-            //               filled: true,
-            //               suffixIcon: const Icon(Icons.arrow_drop_down,
-            //                   color: Colors.grey),
-            //             ),
-            //             validator: (val) {
-            //               if (val!.isEmpty) {
-            //                 return 'Please Enter Your Gender';
-            //               }
-            //               return null;
-            //             },
-            //             onSaved: (val) {
-            //               _editedProfile = UserInfos(
-            //                 name: _editedProfile.name,
-            //                 email: _editedProfile.email,
-            //                 phoneNo: _editedProfile.phoneNo,
-            //                 gender: val.toString(),
-            //                 age: _editedProfile.age,
-            //                 about: _editedProfile.about,
-            //                 interest: _editedProfile.interest,
-            //                 address: _editedProfile.address,
-            //               );
-            //             },
-            //           ),
-            //         ),
-            //       ],
-            //     ),
-            //     Column(
-            //       crossAxisAlignment: CrossAxisAlignment.start,
-            //       children: [
-            //         titleText('Age', true),
-            //         SizedBox(
-            //           width: 160,
-            //           child: TextFormField(
-            //             style:
-            //                 const TextStyle(color: Colors.white, fontSize: 16),
-            //             // controller: _mySearched,
-            //             cursorHeight: 22,
-            //             // autofocus: true,
-            //             cursorColor: Colors.pink,
-            //             decoration: InputDecoration(
-            //               enabledBorder: OutlineInputBorder(
-            //                 borderSide:
-            //                     const BorderSide(color: Colors.pink, width: 2),
-            //                 borderRadius: BorderRadius.circular(30),
-            //               ),
-            //               contentPadding: const EdgeInsets.only(left: 25),
-            //               focusedBorder: OutlineInputBorder(
-            //                   borderSide: const BorderSide(
-            //                       color: Colors.pink, width: 2),
-            //                   borderRadius: BorderRadius.circular(30)),
-            //               floatingLabelBehavior: FloatingLabelBehavior.never,
-            //               hintText: 'Age',
-            //               hintStyle: const TextStyle(
-            //                   color: Colors.white,
-            //                   fontSize: 15,
-            //                   wordSpacing: 2),
-            //               fillColor: Colors.white24,
-            //               filled: true,
-            //               suffixIcon: const Icon(Icons.arrow_drop_down,
-            //                   color: Colors.grey),
-            //             ),
-            //             validator: (val) {
-            //               if (val!.isEmpty) {
-            //                 return 'Please Enter Your Age';
-            //               } else if (int.tryParse(val) == null) {
-            //                 return 'Please Enter a Valid Number';
-            //               } else if (int.parse(val) <= 0) {
-            //                 return 'Please Enter a Valid Age';
-            //               }
-            //               return null;
-            //             },
-            //             onSaved: (val) {
-            //               _editedProfile = UserInfos(
-            //                 name: _editedProfile.name,
-            //                 email: _editedProfile.email,
-            //                 phoneNo: _editedProfile.phoneNo,
-            //                 gender: _editedProfile.gender,
-            //                 age: int.parse(val.toString()),
-            //                 about: _editedProfile.about,
-            //                 interest: _editedProfile.interest,
-            //                 address: _editedProfile.address,
-            //               );
-            //             },
-            //           ),
-            //         ),
-            //       ],
-            //     )
-            //   ],
-            // ),
             titleText('About', false),
             TextFormField(
               maxLines: null,
@@ -672,7 +562,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                 floatingLabelBehavior: FloatingLabelBehavior.never,
                 hintText: 'About',
                 hintStyle: const TextStyle(
-                    color: Colors.white, fontSize: 15, wordSpacing: 2),
+                    color: Colors.white24, fontSize: 15, wordSpacing: 2),
                 fillColor: Colors.white24,
                 filled: true,
                 // suffixIcon: const Icon(Icons.mic, color: Colors.grey),
@@ -685,6 +575,12 @@ class _UserInfoFormState extends State<UserInfoForm> {
                   phoneNo: _editedProfile.phoneNo,
                   gender: _editedProfile.gender,
                   genderChoice: _editedProfile.genderChoice,
+                  iLiked: _editedProfile.iLiked,
+                  isViewed: _editedProfile.isViewed,
+                  whoLikedMe: _editedProfile.whoLikedMe,
+                  intersectionLikes: _editedProfile.intersectionLikes,
+                  latitude: _editedProfile.latitude,
+                  longitude: _editedProfile.longitude,
                   age: _editedProfile.age,
                   about: val.toString(),
                   interest: _editedProfile.interest,
@@ -710,7 +606,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                           style: TextStyle(
                             fontSize: 15,
                             wordSpacing: 2,
-                            color: Colors.white,
+                            color: Colors.white24,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -788,7 +684,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                 floatingLabelBehavior: FloatingLabelBehavior.never,
                 hintText: 'Interest',
                 hintStyle: const TextStyle(
-                    color: Colors.white, fontSize: 15, wordSpacing: 2),
+                    color: Colors.white24, fontSize: 15, wordSpacing: 2),
                 fillColor: Colors.white24,
                 filled: true,
                 suffixIcon: const Icon(Icons.edit, color: Colors.grey),
@@ -807,6 +703,12 @@ class _UserInfoFormState extends State<UserInfoForm> {
                   phoneNo: _editedProfile.phoneNo,
                   gender: _editedProfile.gender,
                   genderChoice: _editedProfile.genderChoice,
+                  iLiked: _editedProfile.iLiked,
+                  isViewed: _editedProfile.isViewed,
+                  whoLikedMe: _editedProfile.whoLikedMe,
+                  intersectionLikes: _editedProfile.intersectionLikes,
+                  latitude: _editedProfile.latitude,
+                  longitude: _editedProfile.longitude,
                   age: _editedProfile.age,
                   about: _editedProfile.about,
                   interest: val.toString(),
@@ -834,7 +736,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                 floatingLabelBehavior: FloatingLabelBehavior.never,
                 hintText: 'City',
                 hintStyle: const TextStyle(
-                    color: Colors.white, fontSize: 15, wordSpacing: 2),
+                    color: Colors.white24, fontSize: 15, wordSpacing: 2),
                 fillColor: Colors.white24,
                 filled: true,
                 suffixIcon: const Icon(Icons.location_on, color: Colors.grey),
@@ -847,6 +749,12 @@ class _UserInfoFormState extends State<UserInfoForm> {
                   phoneNo: _editedProfile.phoneNo,
                   gender: _editedProfile.gender,
                   genderChoice: _editedProfile.genderChoice,
+                  iLiked: _editedProfile.iLiked,
+                  isViewed: _editedProfile.isViewed,
+                  whoLikedMe: _editedProfile.whoLikedMe,
+                  intersectionLikes: _editedProfile.intersectionLikes,
+                  latitude: _editedProfile.latitude,
+                  longitude: _editedProfile.longitude,
                   age: _editedProfile.age,
                   about: _editedProfile.about,
                   interest: _editedProfile.interest,
@@ -861,13 +769,17 @@ class _UserInfoFormState extends State<UserInfoForm> {
               width: double.infinity,
               margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
               child: ElevatedButton(
-                child: const Text(
-                  'Save Changes',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 17),
-                ),
+                child: isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(color: Colors.white),
+                      )
+                    : const Text(
+                        'Save Changes',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17),
+                      ),
                 onPressed: () {
                   _editedProfile = UserInfos(
                     userId: _editedProfile.userId,
@@ -876,6 +788,12 @@ class _UserInfoFormState extends State<UserInfoForm> {
                     phoneNo: _editedProfile.phoneNo,
                     gender: _selectedGender.toString(),
                     genderChoice: _genderPreference.toString(),
+                    iLiked: _editedProfile.iLiked,
+                    isViewed: _editedProfile.isViewed,
+                    whoLikedMe: _editedProfile.whoLikedMe,
+                    intersectionLikes: _editedProfile.intersectionLikes,
+                    latitude: widget.latitude,
+                    longitude: widget.longitude,
                     age: int.parse(_selectedAge.toString()),
                     about: _editedProfile.about,
                     interest: _editedProfile.interest,

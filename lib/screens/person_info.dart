@@ -5,7 +5,14 @@ import '../data/user_info_form.dart';
 
 class PersonInfo extends StatefulWidget {
   final bool isEdit;
-  const PersonInfo({Key? key, required this.isEdit}) : super(key: key);
+  final double latitude;
+  final double longitude;
+  PersonInfo({
+    Key? key,
+    required this.isEdit,
+    this.latitude = 0,
+    this.longitude = 0,
+  }) : super(key: key);
 
   @override
   State<PersonInfo> createState() => _PersonInfoState();
@@ -38,7 +45,7 @@ class _PersonInfoState extends State<PersonInfo> {
                 ),
               ],
             ),
-            const UserInfoForm(),
+            UserInfoForm(latitude: widget.latitude, longitude: widget.longitude),
           ],
         ),
       ),

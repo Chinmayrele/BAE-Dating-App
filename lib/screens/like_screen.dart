@@ -1,27 +1,54 @@
+import 'package:bar_chat_dating_app/providers/info_provider.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_tinder_clone_app/common/color_constants.dart';
-// import 'package:flutter_tinder_clone_app/data/likes_json.dart';
+import 'package:provider/provider.dart';
 
 import '../common/color_constants.dart';
 import '../data/likes_json.dart';
+import '../models/user_info.dart';
 
 /*
 Title:LikesScreen
 Purpose:LikesScreen
-Created By:Kalpesh Khandla
+Created By:Chinmay Rele
 */
 
 class LikesScreen extends StatefulWidget {
+  const LikesScreen({Key? key}) : super(key: key);
   @override
   _LikesPageState createState() => _LikesPageState();
 }
 
 class _LikesPageState extends State<LikesScreen> {
+  late InfoProviders result;
+  late UserInfos userInf;
+  List<UserInfos> likeData = [];
+  bool isLoading = true;
+  @override
+  void initState() {
+    result = Provider.of<InfoProviders>(context, listen: false);
+    result.fetchUSerProfileData().then((value) {
+      userInf = result.userInfo[0];
+      for (int i = 0; i < userInf.whoLikedMe.length; i++) {
+        result.fetchSingleUserData(userInf.whoLikedMe[i]).then((value) {
+          likeData.add(value);
+        });
+      }
+      setState(() {
+        isLoading = false;
+      });
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: ColorConstants.kWhite,
-      body: getBody(),
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : getBody(),
       // bottomSheet: getFooter(),
     );
   }
@@ -29,11 +56,11 @@ class _LikesPageState extends State<LikesScreen> {
   Widget getBody() {
     var size = MediaQuery.of(context).size;
     return ListView(
-      padding: EdgeInsets.only(bottom: 90),
+      padding: const EdgeInsets.only(bottom: 90),
       children: [
-        SizedBox(height: 15),
+        const SizedBox(height: 15),
         Padding(
-          padding: EdgeInsets.only(top: 20),
+          padding: const EdgeInsets.only(top: 20),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -58,151 +85,124 @@ class _LikesPageState extends State<LikesScreen> {
             ],
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
-        Divider(
+        const Divider(
           thickness: 0.8,
         ),
-        Padding(
-          padding: EdgeInsets.only(left: 5, right: 5),
-          child: Wrap(
-            spacing: 10,
-            runSpacing: 20,
-            children: List.generate(likes_json.length, (index) {
-              return Container(
-                width: (size.width - 25) / 2,
-                height: 250,
-                child: Stack(
-                  children: [
-                    Container(
-                      width: (size.width - 15) / 2,
-                      height: 250,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25),
-                          image: DecorationImage(
-                              image: AssetImage((likes_json[index]['img'])),
-                              fit: BoxFit.cover)),
-                    ),
-                    Positioned(
-                      top: 150,
-                      child: Container(
-                        width: (size.width - 15) / 2,
-                        height: 100,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25),
-                            gradient: LinearGradient(
-                                colors: [
-                                  Colors.red.withOpacity(0.55),
-                                  Colors.red.withOpacity(0),
-                                ],
-                                end: Alignment.topCenter,
-                                begin: Alignment.bottomCenter)),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            likes_json[index]['active']
-                                ? Padding(
-                                    padding:
-                                        EdgeInsets.only(left: 8, bottom: 8),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          width: 8,
-                                          height: 8,
-                                          decoration: BoxDecoration(
-                                            color: ColorConstants.kGreen,
-                                            shape: BoxShape.circle,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          "Recently Active",
-                                          style: TextStyle(
-                                            color: ColorConstants.kWhite,
-                                            fontSize: 14,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  )
-                                : Padding(
-                                    padding:
-                                        EdgeInsets.only(left: 8, bottom: 8),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          width: 8,
-                                          height: 8,
-                                          decoration: BoxDecoration(
-                                            color: ColorConstants.kGrey,
-                                            shape: BoxShape.circle,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                          "Offline",
-                                          style: TextStyle(
-                                            color: ColorConstants.kWhite,
-                                            fontSize: 14,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                          ],
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              );
-            }),
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget getFooter() {
-    var size = MediaQuery.of(context).size;
-    return Container(
-      width: size.width,
-      height: 90,
-      child: Padding(
-        padding: EdgeInsets.only(top: 10),
-        child: Column(
-          children: [
-            Container(
-              width: size.width - 70,
-              height: 50,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                gradient: LinearGradient(
-                  colors: [
-                    ColorConstants.yellow_one,
-                    ColorConstants.yellow_two,
-                  ],
-                ),
-              ),
-              child: Center(
+        likeData.isEmpty
+            ? const Center(
                 child: Text(
-                  "SEE WHO LIKES YOU",
+                  'Looks Like no one liked you!!!',
                   style: TextStyle(
-                    color: ColorConstants.kWhite,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18),
                 ),
-              ),
-            )
-          ],
-        ),
-      ),
+              )
+            : Padding(
+                padding: const EdgeInsets.only(left: 5, right: 5),
+                child: Wrap(
+                  spacing: 10,
+                  runSpacing: 20,
+                  children: List.generate(likeData.length, (index) {
+                    return SizedBox(
+                      width: (size.width - 25) / 2,
+                      height: 250,
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: (size.width - 15) / 2,
+                            height: 250,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(25),
+                                image: DecorationImage(
+                                    image: AssetImage(
+                                        (likeData[index].imageUrls[0])),
+                                    fit: BoxFit.cover)),
+                          ),
+                          Positioned(
+                            top: 150,
+                            child: Container(
+                              width: (size.width - 15) / 2,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(25),
+                                  gradient: LinearGradient(
+                                      colors: [
+                                        Colors.red.withOpacity(0.55),
+                                        Colors.red.withOpacity(0),
+                                      ],
+                                      end: Alignment.topCenter,
+                                      begin: Alignment.bottomCenter)),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  likes_json[index]['active']
+                                      ? Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 8, bottom: 8),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                width: 8,
+                                                height: 8,
+                                                decoration: const BoxDecoration(
+                                                  color: ColorConstants.kGreen,
+                                                  shape: BoxShape.circle,
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                width: 5,
+                                              ),
+                                              const Text(
+                                                "Recently Active",
+                                                style: TextStyle(
+                                                  color: ColorConstants.kWhite,
+                                                  fontSize: 14,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        )
+                                      : Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 8, bottom: 8),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                width: 8,
+                                                height: 8,
+                                                decoration: const BoxDecoration(
+                                                  color: ColorConstants.kGrey,
+                                                  shape: BoxShape.circle,
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                width: 5,
+                                              ),
+                                              const Text(
+                                                "Offline",
+                                                style: TextStyle(
+                                                  color: ColorConstants.kWhite,
+                                                  fontSize: 14,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    );
+                  }),
+                ),
+              )
+      ],
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:bar_chat_dating_app/models/user_info.dart';
 import 'package:bar_chat_dating_app/providers/info_provider.dart';
 import 'package:bar_chat_dating_app/screens/person_info.dart';
 import 'package:bar_chat_dating_app/screens/start_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ import '../data/payment_integrate.dart';
 /*
 Title:AccountScreen
 Purpose:AccountScreen
-Created By:Kalpesh Khandla
+Created By:Chinmay Rele
 */
 
 class AccountScreen extends StatefulWidget {
@@ -77,19 +78,6 @@ class _AccountScreenState extends State<AccountScreen> {
         print('DOWNLOAD URL: $urlDownload');
         imageUrlsUser.add(urlDownload);
         setState(() {});
-        // _editedProfile = UserInfos(
-        //   userId: _editedProfile.userId,
-        //   name: _editedProfile.name,
-        //   email: _editedProfile.email,
-        //   phoneNo: _editedProfile.phoneNo,
-        //   gender: _editedProfile.gender,
-        //   genderChoice: _editedProfile.genderChoice,
-        //   age: _editedProfile.age,
-        //   about: _editedProfile.about,
-        //   interest: _editedProfile.interest,
-        //   address: _editedProfile.address,
-        //   imageUrls: imageUrlsUser,
-        // );
       }
     } on FirebaseException catch (e) {
       print('Error Uploading: $e');
@@ -205,7 +193,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                 onTap: () {
                                   Navigator.of(context).push(MaterialPageRoute(
                                       builder: (ctx) =>
-                                          const PersonInfo(isEdit: true)));
+                                          PersonInfo(isEdit: true)));
                                 },
                                 child: SizedBox(
                                   width: 85,
@@ -303,60 +291,126 @@ class _AccountScreenState extends State<AccountScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          Wrap(
-            children: [
-              Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: DottedBorder(
-        strokeWidth: 2,
-        dashPattern: const [6, 6],
-        color: Colors.white,
-        borderType: BorderType.RRect,
-        radius: const Radius.circular(12),
-        padding: const EdgeInsets.all(6),
-        child: InkWell(
-          onTap: () async {
-            await getPicture();
-            await convertToUrl();
-          },
-          child: ClipRRect(
-            borderRadius: const BorderRadius.all(
-              Radius.circular(12),
-            ),
-            child: Container(
-                height: 200,
-                width: 130,
-                decoration: const BoxDecoration(
-                  color: Colors.white38,
-                ),
-                child: urlDownload == ''
-                    ? const Center(
-                        child: Icon(
-                        Icons.add,
-                        size: 48,
-                        color: Colors.pink,
-                      ))
-                    : Image.network(
-                        urlDownload,
-                        fit: BoxFit.cover,
-                      )),
-          ),
-        ),
-      ),
-    ),
-              buildBorderBox(),
-              buildBorderBox(),
-              buildBorderBox(),
-              buildBorderBox(),
-              buildBorderBox(),
-            ],
-          )
+          const ImageContainer(),
         ],
       ),
     );
   }
+}
 
-  buildBorderBox() {
+class ImageContainer extends StatefulWidget {
+  const ImageContainer({Key? key}) : super(key: key);
+
+  @override
+  State<ImageContainer> createState() => _ImageContainerState();
+}
+
+class _ImageContainerState extends State<ImageContainer> {
+  bool isLoading = true;
+  String urlDownload = '';
+  File? _imageFile;
+  UploadTask? task;
+  List<dynamic> imageUrlsUser = [];
+  late Map<String, dynamic> list;
+  bool isLoad = true;
+  // late InfoProviders result;
+
+  Future<void> getPicture() async {
+    try {
+      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        final imageTemp = File(image.path);
+        setState(() {
+          _imageFile = imageTemp;
+        });
+      }
+    } on PlatformException catch (err) {
+      print('Failed to Pick up the Image: $err');
+    }
+  }
+
+  Future<void> convertToUrl() async {
+    try {
+      if (_imageFile != null) {
+        final fileName = _imageFile!.path;
+        final destination = 'files/$fileName';
+        final ref = FirebaseStorage.instance.ref(destination);
+        task = ref.putFile(_imageFile!);
+        if (task == null) {
+          return;
+        }
+        final snapshot = await task!.whenComplete(() {});
+        urlDownload = await snapshot.ref.getDownloadURL();
+        print('DOWNLOAD URL: $urlDownload');
+        imageUrlsUser.add(urlDownload);
+        FirebaseFirestore.instance
+            .collection('profile')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection('imageList')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .set({
+          'imageList': imageUrlsUser,
+        });
+        //     .add({
+        //   'imageList': imageUrlsUser,
+        // });
+        setState(() {});
+        // _editedProfile = UserInfos(
+        //   userId: _editedProfile.userId,
+        //   name: _editedProfile.name,
+        //   email: _editedProfile.email,
+        //   phoneNo: _editedProfile.phoneNo,
+        //   gender: _editedProfile.gender,
+        //   genderChoice: _editedProfile.genderChoice,
+        //   age: _editedProfile.age,
+        //   about: _editedProfile.about,
+        //   interest: _editedProfile.interest,
+        //   address: _editedProfile.address,
+        //   imageUrls: imageUrlsUser,
+        // );
+      }
+    } on FirebaseException catch (e) {
+      print('Error Uploading: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    callImageList();
+    super.initState();
+  }
+
+  callImageList() {
+    final data = FirebaseFirestore.instance
+        .collection('profile')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('imageList')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get()
+        .then((data) {
+      final e = data.data();
+      print(e.toString());
+      imageUrlsUser = e!['imageList'];
+      setState(() {
+        isLoad = false;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    int x = 4 - imageUrlsUser.length;
+
+    return Wrap(
+      children: [
+        ...List.generate(imageUrlsUser.length,
+            (index) => buildBorderBox(imageUrlsUser[index])),
+        ...List.generate(x, ((index) => buildBorderBox(''))),
+      ],
+    );
+  }
+
+  buildBorderBox(String url) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: DottedBorder(
@@ -381,7 +435,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 decoration: const BoxDecoration(
                   color: Colors.white38,
                 ),
-                child: urlDownload == ''
+                child: url == ''
                     ? const Center(
                         child: Icon(
                         Icons.add,
@@ -389,7 +443,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         color: Colors.pink,
                       ))
                     : Image.network(
-                        urlDownload,
+                        url,
                         fit: BoxFit.cover,
                       )),
           ),

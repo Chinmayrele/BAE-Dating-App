@@ -1,10 +1,12 @@
 import 'package:bar_chat_dating_app/data/location_permi.dart';
 import 'package:bar_chat_dating_app/models/que_ans_info.dart';
 import 'package:bar_chat_dating_app/providers/info_provider.dart';
-import 'package:bar_chat_dating_app/screens/home_page_screen.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../global/que_ans_list.dart';
+import '../global/title_text.dart';
 
 class QueScreen extends StatefulWidget {
   const QueScreen({Key? key}) : super(key: key);
@@ -21,60 +23,22 @@ class _QueScreenState extends State<QueScreen> {
   String? _drinkStatus;
   String? _exerciseStatus;
   String? _htStatus;
-  List<String> lookingStatus = [
-    'A Relationship',
-    'Nothing Serious',
-    'I\'ll know when I find it',
-    'I\'m not sure yet',
-  ];
-  List<String> vacationStatus = [
-    'Hiking & Backpack',
-    'Deckchair & Sunscreen',
-    'Museum & Postcards',
-  ];
-  List<String> nightingStatus = [
-    'I\'m in bed by Midnight',
-    'I party in Moderation',
-    'I\'m a Night owl',
-  ];
-  List<String> smokingStatus = [
-    'Well I smoke',
-    'Not a Fan, but whatever',
-    'Zero Tolerance',
-  ];
-  List<String> drinkingStatus = [
-    'I drink Occasionally',
-    'I drink always',
-    'Don\'t Drink but not a Problem',
-    'Zero Tolerance',
-  ];
-  List<String> exercisingStatus = [
-    'Occasional Exercise',
-    'Enough Cardio to keep up',
-    'All exercise all the time',
-    'Not much of a fan of exercise',
-  ];
-  List<String> heightStatus = [
-    '160',
-    '165',
-    '170',
-    '175',
-    '>180',
-  ];
-  titleText(String text, bool isRequired) {
-    return Container(
-      margin: const EdgeInsets.only(left: 25, bottom: 8, top: 15),
-      child: RichText(
-          text: TextSpan(
-              text: text,
-              style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold),
-              children: [
-            if (isRequired)
-              const TextSpan(text: ' *', style: TextStyle(color: Colors.red)),
-          ])),
-    );
-  }
+  bool isLoading = false;
+
+  // titleText(String text, bool isRequired) {
+  //   return Container(
+  //     margin: const EdgeInsets.only(left: 25, bottom: 8, top: 15),
+  //     child: RichText(
+  //         text: TextSpan(
+  //             text: text,
+  //             style: const TextStyle(
+  //                 color: Colors.white, fontWeight: FontWeight.bold),
+  //             children: [
+  //           if (isRequired)
+  //             const TextSpan(text: ' *', style: TextStyle(color: Colors.red)),
+  //         ])),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +79,7 @@ class _QueScreenState extends State<QueScreen> {
               margin: const EdgeInsets.only(left: 12, right: 10),
               width: MediaQuery.of(context).size.width * 0.9,
               child: const Text(
-                'Please Answer the Following Questions so we could Understand You Better',
+                'Please answer the following questions so we could understand you better',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 20,
@@ -152,7 +116,7 @@ class _QueScreenState extends State<QueScreen> {
                                   style: TextStyle(
                                     fontSize: 15,
                                     wordSpacing: 2,
-                                    color: Colors.white,
+                                    color: Colors.white24,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -215,7 +179,8 @@ class _QueScreenState extends State<QueScreen> {
                     ),
                     //2nd QUE
                     titleText(
-                        'What two words decribe your ideal location?', true),
+                        'What two words decribe your ideal location place?',
+                        true),
                     SizedBox(
                       width: double.infinity,
                       child: DropdownButtonHideUnderline(
@@ -228,11 +193,11 @@ class _QueScreenState extends State<QueScreen> {
                               ),
                               Expanded(
                                 child: Text(
-                                  'Vcation Mode',
+                                  'Vacation Mode',
                                   style: TextStyle(
                                     fontSize: 15,
                                     wordSpacing: 2,
-                                    color: Colors.white,
+                                    color: Colors.white24,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -311,7 +276,7 @@ class _QueScreenState extends State<QueScreen> {
                                   style: TextStyle(
                                     fontSize: 15,
                                     wordSpacing: 2,
-                                    color: Colors.white,
+                                    color: Colors.white24,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -390,7 +355,7 @@ class _QueScreenState extends State<QueScreen> {
                                   style: TextStyle(
                                     fontSize: 15,
                                     wordSpacing: 2,
-                                    color: Colors.white,
+                                    color: Colors.white24,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -469,7 +434,7 @@ class _QueScreenState extends State<QueScreen> {
                                   style: TextStyle(
                                     fontSize: 15,
                                     wordSpacing: 2,
-                                    color: Colors.white,
+                                    color: Colors.white24,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -548,7 +513,7 @@ class _QueScreenState extends State<QueScreen> {
                                   style: TextStyle(
                                     fontSize: 15,
                                     wordSpacing: 2,
-                                    color: Colors.white,
+                                    color: Colors.white24,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -627,7 +592,7 @@ class _QueScreenState extends State<QueScreen> {
                                   style: TextStyle(
                                     fontSize: 15,
                                     wordSpacing: 2,
-                                    color: Colors.white,
+                                    color: Colors.white24,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -695,14 +660,21 @@ class _QueScreenState extends State<QueScreen> {
               width: double.infinity,
               margin: const EdgeInsets.only(left: 10, right: 10),
               child: ElevatedButton(
-                child: const Text(
-                  'Continue',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 17),
-                ),
+                child: isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : const Text(
+                        'Continue',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17),
+                      ),
                 onPressed: () async {
+                  setState(() {
+                    isLoading = true;
+                  });
                   //FIREBASE LOGIC
                   await queAnsFill.addQueAnsInfo(QueAnsInfo(
                     relationStatus: _lookStatus.toString(),
@@ -713,6 +685,9 @@ class _QueScreenState extends State<QueScreen> {
                     exerciseStatus: _exerciseStatus.toString(),
                     heightStatus: _htStatus.toString(),
                   ));
+                  setState(() {
+                    isLoading = false;
+                  });
 
                   //NAVIGATE AFTER FIREBASE LOGIC
                   Navigator.of(context).pushReplacement(MaterialPageRoute(

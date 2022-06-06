@@ -24,6 +24,7 @@ class HomePageScreen extends StatefulWidget {
 
 class _HomePageScreenState extends State<HomePageScreen> {
   int pageIndex = 0;
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,8 +38,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
   Widget getBody() {
     return IndexedStack(
       index: pageIndex,
-      children: [
-        const ExploreScreen(),
+      children: const [
+        ExploreScreen(),
         LikesScreen(),
         ChatScreen(),
         AccountScreen(),

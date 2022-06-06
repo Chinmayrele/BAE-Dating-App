@@ -1,9 +1,14 @@
 import 'package:bar_chat_dating_app/providers/info_provider.dart';
 import 'package:bar_chat_dating_app/screens/account_screen.dart';
+import 'package:bar_chat_dating_app/screens/chat_screen.dart';
+import 'package:bar_chat_dating_app/screens/chating.dart';
+import 'package:bar_chat_dating_app/screens/chatting_screen.dart';
 import 'package:bar_chat_dating_app/screens/home_page_screen.dart';
 import 'package:bar_chat_dating_app/screens/person_info.dart';
+import 'package:bar_chat_dating_app/screens/phone_login.dart';
 import 'package:bar_chat_dating_app/screens/que_screen.dart';
 import 'package:bar_chat_dating_app/screens/start_screen.dart';
+import 'package:bar_chat_dating_app/screens/trial.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -27,8 +32,8 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(scaffoldBackgroundColor: Colors.black),
         //FOR SEEING LOGIN SCREEN ENTER 'STARTSCREEN()'
-        home: const StartScreen(),
-        // home:  PersonInfo(isEdit: false,),
+        // home: const StartScreen(),
+        home: const HomePageScreen(),
       ),
     );
   }
