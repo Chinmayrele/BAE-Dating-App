@@ -4,7 +4,6 @@ import 'package:bar_chat_dating_app/screens/home_page_screen.dart';
 import 'package:bar_chat_dating_app/screens/splash_screen.dart';
 import 'package:bar_chat_dating_app/screens/start_screen.dart';
 import 'package:bar_chat_dating_app/screens/subscription_page.dart';
-import 'package:bar_chat_dating_app/screens/trial.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

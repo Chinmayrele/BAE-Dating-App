@@ -290,7 +290,7 @@ class _SignUpFormState extends State<SignUpForm> {
                             MaterialPageRoute(builder: (ctx) => const Login()));
                   },
                   child: Text(
-                    widget.isLogin ? 'Sign In' : 'Log In',
+                    widget.isLogin ? 'Sign Up' : 'Log In',
                     style: const TextStyle(
                         color: Colors.pink, fontWeight: FontWeight.bold),
                   ))

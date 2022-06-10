@@ -114,16 +114,35 @@ class _CardsStackWidgetState extends State<CardsStackWidget> {
         ),
         SizedBox(height: size.height * 0.02),
         dragabbleItems.isEmpty
-            ? const Center(
-                child: Text(
-                  'Looks Like we found no One around you',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
+            ? Column(
+                children: [
+                  SizedBox(height: size.height * 0.34),
+                  Container(
+                    margin: const EdgeInsets.all(10),
+                    width: size.width * 0.95,
+                    child: const Center(
+                      child: Text(
+                        'Looks Like we found no One around you!!!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               )
+            // const Center(
+            //     child: Text(
+            //       'Looks Like we found no One around you',
+            //       style: TextStyle(
+            //         color: Colors.white,
+            //         fontWeight: FontWeight.bold,
+            //         fontSize: 24,
+            //       ),
+            //     ),
+            //   )
             : Stack(
                 clipBehavior: Clip.none,
                 children: [
