@@ -1,3 +1,4 @@
+import 'package:bar_chat_dating_app/auth/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,7 +33,10 @@ class _PhoneLoginState extends State<PhoneLogin> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: isLoading
-          ? const Center(child: CircularProgressIndicator(color: Colors.white,))
+          ? const Center(
+              child: CircularProgressIndicator(
+              color: Colors.white,
+            ))
           : ListView(children: [
               const SizedBox(height: 20),
               Row(
@@ -253,7 +257,7 @@ class _PhoneLoginState extends State<PhoneLogin> {
                         });
                       },
                       codeAutoRetrievalTimeout: (v) {
-                        snackBar(v.toString());
+                        // snackBar(v.toString());
                         setState(() {
                           isLoading = false;
                         });
@@ -268,7 +272,29 @@ class _PhoneLoginState extends State<PhoneLogin> {
                   ),
                 ),
               ),
-              const SizedBox(height: 40)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Login in with Email?',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(builder: (ctx) => const Login()));
+                        // : Navigator.of(context).pushReplacement(
+                        //     MaterialPageRoute(
+                        //         builder: (ctx) => const PhoneLogin()));
+                      },
+                      child: const Text(
+                        'Log In',
+                        style: TextStyle(
+                            color: Colors.pink, fontWeight: FontWeight.bold),
+                      ))
+                ],
+              ),
+              const SizedBox(height: 30)
             ]),
     );
   }

@@ -1,3 +1,5 @@
+import 'package:bar_chat_dating_app/models/que_ans_info.dart';
+import 'package:bar_chat_dating_app/screens/que_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,14 +29,17 @@ class _SignUpState extends State<SignUp> {
       if (!isLogin) {
         authResult = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(authResult.user!.uid)
-            .set({
-          'username': username,
-          'email': email,
-        });
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx) => HomePageScreen()));
+        // await FirebaseFirestore.instance
+        //     .collection('users')
+        //     .doc(authResult.user!.uid)
+        //     .set({
+        //   'username': username,
+        //   'email': email,
+        // });
+        if (authResult.user != null) {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (ctx) => const QueScreen()));
+        }
       }
     } on PlatformException catch (err) {
       var message = 'ERROR!!! Please Check Your Credentials';
@@ -71,15 +76,28 @@ class _SignUpState extends State<SignUp> {
         child: Column(
           children: [
             SizedBox(
-              height: deviceSize.height*0.32,
-              width: double.infinity,
+              height: deviceSize.height * 0.22,
+              // width: double.infinity,
               child: Image.asset(
-                'assets/images/infinity_logo.jpeg',
-                fit: BoxFit.cover,
+                'assets/images/bae_flogo.png',
               ),
             ),
-
-            SizedBox(height: deviceSize.height*0.03,),
+            const SizedBox(height: 10),
+            const Text(
+              '𝓢𝓲𝓰𝓷 𝓤𝓹',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 30),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'Please Sign Up to Start Using our App',
+              style: TextStyle(color: Colors.white),
+            ),
+            SizedBox(
+              height: deviceSize.height * 0.03,
+            ),
             SignUpForm(
               isLogin: false,
               submitFn: _signUp,

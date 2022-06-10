@@ -1,3 +1,4 @@
+import 'package:bar_chat_dating_app/screens/que_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,8 +30,10 @@ class _LoginState extends State<Login> {
         authResult = await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: email, password: password);
         debugPrint(authResult.toString());
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (ctx) => const HomePageScreen()));
+        if (authResult.user != null) {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (ctx) => const QueScreen()));
+        }
       }
     } on PlatformException catch (err) {
       var message = 'ERROR!!! Please Check Your Credentials';
@@ -47,7 +50,7 @@ class _LoginState extends State<Login> {
     } catch (err) {
       ScaffoldMessenger.of(ctx).showSnackBar(
         SnackBar(
-          content: Text(err.toString()),
+          content: const Text('User not found! Please Sign in First'),
           backgroundColor: Theme.of(ctx).errorColor,
         ),
       );
@@ -60,39 +63,40 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 30),
-            SizedBox(
-              height: 230,
-              width: double.infinity,
-              child: Image.asset(
-                'assets/images/infinity_logo.jpeg',
-                fit: BoxFit.cover,
+    return SafeArea(
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 30),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.22,
+                // width: double.infinity,
+                child: Image.asset(
+                  'assets/images/bae_flogo.png',
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              '𝓛𝓸𝓰-𝓘𝓷',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 30),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Please Login to Continue Using our App',
-              style: TextStyle(color: Colors.white),
-            ),
-            const SizedBox(height: 12),
-            SignUpForm(
-              isLogin: true,
-              submitFn: _login,
-              isLoading: _isLoading,
-            ),
-          ],
+              const SizedBox(height: 10),
+              const Text(
+                '𝓛𝓸𝓰-𝓘𝓷',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Please Login to Continue Using our App',
+                style: TextStyle(color: Colors.white),
+              ),
+              const SizedBox(height: 12),
+              SignUpForm(
+                isLogin: true,
+                submitFn: _login,
+                isLoading: _isLoading,
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:bar_chat_dating_app/screens/phone_login.dart';
+import 'package:bar_chat_dating_app/screens/que_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // import 'package:flutter_tinder_clone_app/screens/home_page_screen.dart';
@@ -15,7 +16,7 @@ class SignUpForm extends StatefulWidget {
   final bool isLoading;
   final void Function(String email, String password, String username,
       bool isLogin, BuildContext context) submitFn;
-  SignUpForm({
+  const SignUpForm({
     Key? key,
     required this.isLogin,
     required this.submitFn,
@@ -31,6 +32,7 @@ class _SignUpFormState extends State<SignUpForm> {
   String _emailAddress = '';
   String _userName = '';
   String _password = '';
+  bool isVisible = false;
 
   _trySubmit(BuildContext context) {
     var isValid = _form.currentState!.validate();
@@ -52,10 +54,11 @@ class _SignUpFormState extends State<SignUpForm> {
       key: _form,
       child: Column(
         children: [
-          (widget.isLogin != true)
+          (!widget.isLogin)
               ? Padding(
-                  padding: EdgeInsets.only(left: 15, right: 15),
+                  padding: const EdgeInsets.only(left: 15, right: 15),
                   child: TextFormField(
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
                     // autofocus: true,
                     maxLength: 25,
                     maxLengthEnforcement: MaxLengthEnforcement.enforced,
@@ -63,21 +66,40 @@ class _SignUpFormState extends State<SignUpForm> {
                     decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.white24,
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25.0),
+                          borderSide: const BorderSide(
+                            color: Colors.pink,
+                            width: 2.0,
+                          ),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25.0),
+                          borderSide: const BorderSide(
+                            color: Colors.pink,
+                            width: 2.0,
+                          ),
+                        ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(25.0),
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Colors.white,
                             width: 2.0,
                           ),
                         ),
                         // fillColor: Colors.white,
                         focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.pink)),
+                          borderRadius: BorderRadius.circular(25.0),
+                          borderSide: const BorderSide(
+                            color: Colors.pink,
+                            width: 2.0,
+                          ),
+                        ),
                         labelText: 'Username',
-                        labelStyle: TextStyle(color: Colors.white),
-                        floatingLabelStyle: TextStyle(color: Colors.pink),
+                        labelStyle: const TextStyle(color: Colors.white),
+                        floatingLabelStyle: const TextStyle(color: Colors.pink),
                         border: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white),
+                          borderSide: const BorderSide(color: Colors.white),
                           // gapPadding: 8,
                           borderRadius: BorderRadius.circular(20),
                         )),
@@ -93,11 +115,11 @@ class _SignUpFormState extends State<SignUpForm> {
                     },
                   ),
                 )
-              : SizedBox(),
-          SizedBox(height: 20),
+              : const SizedBox(),
           Padding(
-            padding: EdgeInsets.only(left: 15, right: 15),
+            padding: const EdgeInsets.only(left: 15, right: 15),
             child: TextFormField(
+              style: const TextStyle(color: Colors.white, fontSize: 16),
               keyboardType: TextInputType.emailAddress,
               cursorColor: Colors.white,
               decoration: InputDecoration(
@@ -105,16 +127,35 @@ class _SignUpFormState extends State<SignUpForm> {
                   fillColor: Colors.white24,
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25.0),
-                    borderSide: BorderSide(
+                    borderSide: const BorderSide(
                       color: Colors.white,
                       width: 2.0,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.pink)),
+                    borderRadius: BorderRadius.circular(25.0),
+                    borderSide: const BorderSide(
+                      color: Colors.pink,
+                      width: 2.0,
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25.0),
+                    borderSide: const BorderSide(
+                      color: Colors.pink,
+                      width: 2.0,
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25.0),
+                    borderSide: const BorderSide(
+                      color: Colors.pink,
+                      width: 2.0,
+                    ),
+                  ),
                   labelText: 'Email',
-                  labelStyle: TextStyle(color: Colors.white),
-                  floatingLabelStyle: TextStyle(color: Colors.pink),
+                  labelStyle: const TextStyle(color: Colors.white),
+                  floatingLabelStyle: const TextStyle(color: Colors.pink),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
                   )),
@@ -132,35 +173,58 @@ class _SignUpFormState extends State<SignUpForm> {
               },
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Padding(
-            padding: EdgeInsets.only(left: 15, right: 15),
+            padding: const EdgeInsets.only(left: 15, right: 15),
             child: TextFormField(
+              style: const TextStyle(color: Colors.white, fontSize: 16),
               cursorColor: Colors.white,
-              obscureText: true,
+              obscureText: isVisible ? false : true,
               decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.white24,
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25.0),
-                    borderSide: BorderSide(
+                    borderSide: const BorderSide(
                       color: Colors.white,
                       width: 2.0,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
-                      // borderRadius: BorderRadius.circular(20),
-                      borderSide: BorderSide(color: Colors.pink)),
+                    borderRadius: BorderRadius.circular(25.0),
+                    borderSide: const BorderSide(
+                      color: Colors.pink,
+                      width: 2.0,
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25.0),
+                    borderSide: const BorderSide(
+                      color: Colors.pink,
+                      width: 2.0,
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25.0),
+                    borderSide: const BorderSide(
+                      color: Colors.pink,
+                      width: 2.0,
+                    ),
+                  ),
                   labelText: 'Password',
-                  labelStyle: TextStyle(color: Colors.white),
+                  labelStyle: const TextStyle(color: Colors.white),
                   suffixIcon: InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      setState(() {
+                        isVisible = !isVisible;
+                      });
+                    },
                     child: Icon(
-                      Icons.visibility_off,
+                      isVisible ? Icons.visibility_off : Icons.visibility_sharp,
                       color: Colors.white,
                     ),
                   ),
-                  floatingLabelStyle: TextStyle(color: Colors.pink),
+                  floatingLabelStyle: const TextStyle(color: Colors.pink),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
                   )),
@@ -178,23 +242,24 @@ class _SignUpFormState extends State<SignUpForm> {
               },
             ),
           ),
-          SizedBox(height: 20),
-          SizedBox(height: 10),
+          const SizedBox(height: 30),
           Container(
             // width: deviceSize.width * 0.7,
             width: 250,
-            margin: EdgeInsets.only(left: 20, right: 20),
+            margin: const EdgeInsets.only(left: 20, right: 20),
             child: ElevatedButton(
               onPressed: () {
-                // _trySubmit(context);
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (ctx) => HomePageScreen()));
+                _trySubmit(context);
+                // Navigator.of(context).pushReplacement(MaterialPageRoute(
+                //     builder: (ctx) => const QueScreen()));
               },
               child: widget.isLoading
-                  ? CircularProgressIndicator()
+                  ? const CircularProgressIndicator(
+                      color: Colors.white,
+                    )
                   : Text(
                       widget.isLogin ? 'Log In' : 'Sign Up',
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 17),
@@ -203,7 +268,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   elevation: 20,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15)),
-                  padding: EdgeInsets.all(18),
+                  padding: const EdgeInsets.all(18),
                   primary: Colors.pink),
             ),
           ),
@@ -214,58 +279,50 @@ class _SignUpFormState extends State<SignUpForm> {
                 widget.isLogin
                     ? 'Don\'t have an Account?'
                     : 'Already have an Account?',
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white),
               ),
               TextButton(
                   onPressed: () {
                     widget.isLogin
                         ? Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(builder: (ctx) => SignUp()))
+                            MaterialPageRoute(builder: (ctx) => const SignUp()))
                         : Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(builder: (ctx) => PhoneLogin()));
+                            MaterialPageRoute(builder: (ctx) => const Login()));
                   },
                   child: Text(
                     widget.isLogin ? 'Sign In' : 'Log In',
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: Colors.pink, fontWeight: FontWeight.bold),
                   ))
             ],
           ),
-          Divider(
+          const Divider(
             color: Colors.white,
             indent: 30,
             endIndent: 30,
             thickness: 0.5,
           ),
-          SizedBox(height: 8),
-          Text(
-            'Or Connect with',
+          const SizedBox(height: 8),
+          const Text(
+            'Or Login with',
             style: TextStyle(color: Colors.white, fontSize: 12),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           SizedBox(
             // width: deviceSize.width * 0.5,
             width: 180,
-            height: widget.isLogin ? 45 : 40,
+            height: 50,
             child: ElevatedButton(
-              onPressed: () {},
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: 30,
-                    width: 30,
-                    child: Image.asset('assets/images/google_logo.png'),
-                  ),
-                  Text(
-                    'Google',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17),
-                  ),
-                ],
-              ),
+              onPressed: () {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (ctx) => const PhoneLogin()));
+              },
+              child: const Text('Phone Number',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
+                  )),
               style: ElevatedButton.styleFrom(
                 elevation: 20,
                 primary: Colors.pinkAccent,

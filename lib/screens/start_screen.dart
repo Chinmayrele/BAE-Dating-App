@@ -68,25 +68,25 @@ class StartScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 5),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.center,
-            //   children: [
-            //     const Text(
-            //       'Already have an Account?',
-            //       style: TextStyle(color: Colors.white),
-            //     ),
-            //     TextButton(
-            //         onPressed: () {
-            //           Navigator.of(context).pushReplacement(
-            //               MaterialPageRoute(builder: (ctx) => const Login()));
-            //         },
-            //         child: const Text(
-            //           'Log In',
-            //           style: TextStyle(
-            //               color: Colors.pink, fontWeight: FontWeight.bold),
-            //         ))
-            //   ],
-            // ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Already have an Account?',
+                  style: TextStyle(color: Colors.white),
+                ),
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (ctx) => const Login()));
+                    },
+                    child: const Text(
+                      'Log In',
+                      style: TextStyle(
+                          color: Colors.pink, fontWeight: FontWeight.bold),
+                    ))
+              ],
+            ),
           ],
         ),
       ),
