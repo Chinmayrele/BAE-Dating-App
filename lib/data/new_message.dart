@@ -1,10 +1,11 @@
+import 'package:bar_chat_dating_app/models/user_info.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class NewMessage extends StatefulWidget {
-  final String chatterUserId;
-  const NewMessage({Key? key, required this.chatterUserId}) : super(key: key);
+  final UserInfos chatterUser;
+  const NewMessage({Key? key, required this.chatterUser}) : super(key: key);
 
   @override
   State<NewMessage> createState() => _NewMessageState();
@@ -15,10 +16,10 @@ class _NewMessageState extends State<NewMessage> {
   final _controller = TextEditingController();
   void _sendMessage() {
     final logUserId = FirebaseAuth.instance.currentUser!.uid;
-    final strCompare = logUserId.compareTo(widget.chatterUserId);
+    final strCompare = logUserId.compareTo(widget.chatterUser.userId);
     final docId = strCompare == -1
-        ? logUserId + widget.chatterUserId
-        : widget.chatterUserId + logUserId;
+        ? logUserId + widget.chatterUser.userId
+        : widget.chatterUser.userId + logUserId;
     FocusScope.of(context).unfocus();
     FirebaseFirestore.instance
         .collection('chatRoom')
@@ -28,7 +29,7 @@ class _NewMessageState extends State<NewMessage> {
       'text': _enteredMessage,
       'createdAt': Timestamp.now(),
       'senderId': logUserId,
-      'receiverId': widget.chatterUserId,
+      'receiverId': widget.chatterUser.userId,
     });
     _controller.clear();
     _enteredMessage = '';
@@ -44,6 +45,7 @@ class _NewMessageState extends State<NewMessage> {
           child: Padding(
             padding: const EdgeInsets.only(left: 10, right: 10),
             child: TextField(
+              cursorColor: Colors.pink,
               maxLines: null,
               controller: _controller,
               textInputAction: TextInputAction.done,
@@ -67,7 +69,8 @@ class _NewMessageState extends State<NewMessage> {
                       borderRadius: BorderRadius.circular(20),
                       borderSide: const BorderSide(color: Colors.white24)),
                   labelText: 'Send a Message...',
-                  labelStyle: const TextStyle(color: Colors.white24, fontSize: 13),
+                  labelStyle:
+                      const TextStyle(color: Colors.white24, fontSize: 13),
                   floatingLabelBehavior: FloatingLabelBehavior.never),
               style: const TextStyle(
                 color: Colors.white,

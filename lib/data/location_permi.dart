@@ -97,7 +97,7 @@ class _LocationPermiState extends State<LocationPermi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: isloading ? Center(child: CircularProgressIndicator()) : Container(),
+        body: isloading ? const Center(child: CircularProgressIndicator(color: Colors.white,)) : Container(),
         // isloading
         //     ? const Center(child: CircularProgressIndicator())
         //     : Column(

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bar_chat_dating_app/providers/info_provider.dart';
+import 'package:bar_chat_dating_app/screens/card_stack.dart';
 import 'package:bar_chat_dating_app/screens/home_page_screen.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -38,6 +39,15 @@ class _UserInfoFormState extends State<UserInfoForm> {
   List<String> imageUrlsUser = [];
   bool isLoading = false;
 
+  snackBar(String message) {
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   var _editedProfile = UserInfos(
     userId: FirebaseAuth.instance.currentUser!.uid,
     name: '',
@@ -45,7 +55,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
     phoneNo: '',
     gender: '',
     genderChoice: '',
-    iLiked: [],
+    iLike: [],
     isViewed: [],
     whoLikedMe: [],
     intersectionLikes: [],
@@ -56,6 +66,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
     interest: '',
     address: '',
     imageUrls: [],
+    isSubscribed: false,
   );
 
   Future<void> getPicture() async {
@@ -82,54 +93,59 @@ class _UserInfoFormState extends State<UserInfoForm> {
         "USER AGE ${_editedProfile.age}\nUSER GENDER ${_editedProfile.genderChoice}\nUSER NAME ${_editedProfile.name}");
     //Firebase Logic
     //FIREBASE IMAGE STORAGE LOGIC
-    try {
-      setState(() {
-        isLoading = true;
-      });
-      if (_imageFile != null) {
-        final fileName = _imageFile!.path;
-        final destination = 'files/$fileName';
-        final ref = FirebaseStorage.instance.ref(destination);
-        task = ref.putFile(_imageFile!);
-        if (task != null) {
-          final snapshot = await task!.whenComplete(() {});
-          final urlDownload = await snapshot.ref.getDownloadURL();
-          print('DOWNLOAD URL: $urlDownload');
-          imageUrlsUser.add(urlDownload);
-          _editedProfile = UserInfos(
-            userId: _editedProfile.userId,
-            name: _editedProfile.name,
-            email: _editedProfile.email,
-            phoneNo: _editedProfile.phoneNo,
-            gender: _editedProfile.gender,
-            genderChoice: _editedProfile.genderChoice,
-            iLiked: _editedProfile.iLiked,
-            isViewed: _editedProfile.isViewed,
-            whoLikedMe: _editedProfile.whoLikedMe,
-            intersectionLikes: _editedProfile.intersectionLikes,
-            latitude: _editedProfile.latitude,
-            longitude: _editedProfile.longitude,
-            age: _editedProfile.age,
-            about: _editedProfile.about,
-            interest: _editedProfile.interest,
-            address: _editedProfile.address,
-            imageUrls: imageUrlsUser,
-          );
+    if (_imageFile == null) {
+      snackBar('Please Select a image first');
+    } else {
+      try {
+        setState(() {
+          isLoading = true;
+        });
+        if (_imageFile != null) {
+          final fileName = _imageFile!.path;
+          final destination = 'files/$fileName';
+          final ref = FirebaseStorage.instance.ref(destination);
+          task = ref.putFile(_imageFile!);
+          if (task != null) {
+            final snapshot = await task!.whenComplete(() {});
+            final urlDownload = await snapshot.ref.getDownloadURL();
+            print('DOWNLOAD URL: $urlDownload');
+            imageUrlsUser.add(urlDownload);
+            _editedProfile = UserInfos(
+              userId: _editedProfile.userId,
+              name: _editedProfile.name,
+              email: _editedProfile.email,
+              phoneNo: _editedProfile.phoneNo,
+              gender: _editedProfile.gender,
+              genderChoice: _editedProfile.genderChoice,
+              iLike: _editedProfile.iLike,
+              isViewed: _editedProfile.isViewed,
+              whoLikedMe: _editedProfile.whoLikedMe,
+              intersectionLikes: _editedProfile.intersectionLikes,
+              latitude: _editedProfile.latitude,
+              longitude: _editedProfile.longitude,
+              age: _editedProfile.age,
+              about: _editedProfile.about,
+              interest: _editedProfile.interest,
+              address: _editedProfile.address,
+              imageUrls: imageUrlsUser,
+              isSubscribed: _editedProfile.isSubscribed,
+            );
+          }
+          if (task == null) {
+            return;
+          }
         }
-        if (task == null) {
-          return;
-        }
+      } on FirebaseException catch (e) {
+        print('Error Uploading: $e');
       }
-    } on FirebaseException catch (e) {
-      print('Error Uploading: $e');
+      await profileUserInfo.addUserProfileInfo(_editedProfile);
+      setState(() {
+        isLoading = false;
+      });
+      //Navigate after Completeing Firebase Logic
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (ctx) => const HomePageScreen()));
     }
-    await profileUserInfo.addUserProfileInfo(_editedProfile);
-    setState(() {
-      isLoading = false;
-    });
-    //Navigate after Completeing Firebase Logic
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (ctx) => const HomePageScreen()));
   }
 
   @override
@@ -211,6 +227,14 @@ class _UserInfoFormState extends State<UserInfoForm> {
               cursorHeight: 22,
               cursorColor: Colors.pink,
               decoration: InputDecoration(
+                errorBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.pink, width: 2),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.pink, width: 2),
+                  borderRadius: BorderRadius.circular(30),
+                ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: const BorderSide(color: Colors.pink, width: 2),
                   borderRadius: BorderRadius.circular(30),
@@ -241,7 +265,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                   phoneNo: _editedProfile.phoneNo,
                   gender: _editedProfile.gender,
                   genderChoice: _editedProfile.genderChoice,
-                  iLiked: _editedProfile.iLiked,
+                  iLike: _editedProfile.iLike,
                   isViewed: _editedProfile.isViewed,
                   whoLikedMe: _editedProfile.whoLikedMe,
                   intersectionLikes: _editedProfile.intersectionLikes,
@@ -252,6 +276,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                   interest: _editedProfile.interest,
                   address: _editedProfile.address,
                   imageUrls: _editedProfile.imageUrls,
+                  isSubscribed: _editedProfile.isSubscribed,
                 );
               },
             ),
@@ -264,6 +289,14 @@ class _UserInfoFormState extends State<UserInfoForm> {
               cursorColor: Colors.pink,
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
+                errorBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.pink, width: 2),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.pink, width: 2),
+                  borderRadius: BorderRadius.circular(30),
+                ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: const BorderSide(color: Colors.pink, width: 2),
                   borderRadius: BorderRadius.circular(30),
@@ -299,7 +332,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                   phoneNo: _editedProfile.phoneNo,
                   gender: _editedProfile.gender,
                   genderChoice: _editedProfile.genderChoice,
-                  iLiked: _editedProfile.iLiked,
+                  iLike: _editedProfile.iLike,
                   isViewed: _editedProfile.isViewed,
                   whoLikedMe: _editedProfile.whoLikedMe,
                   intersectionLikes: _editedProfile.intersectionLikes,
@@ -310,6 +343,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                   interest: _editedProfile.interest,
                   address: _editedProfile.address,
                   imageUrls: _editedProfile.imageUrls,
+                  isSubscribed: _editedProfile.isSubscribed,
                 );
               },
             ),
@@ -326,6 +360,14 @@ class _UserInfoFormState extends State<UserInfoForm> {
               maxLength: 10,
               maxLengthEnforcement: MaxLengthEnforcement.enforced,
               decoration: InputDecoration(
+                errorBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.pink, width: 2),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.pink, width: 2),
+                  borderRadius: BorderRadius.circular(30),
+                ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: const BorderSide(color: Colors.pink, width: 2),
                   borderRadius: BorderRadius.circular(30),
@@ -358,7 +400,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                   phoneNo: val.toString(),
                   gender: _editedProfile.gender,
                   genderChoice: _editedProfile.genderChoice,
-                  iLiked: _editedProfile.iLiked,
+                  iLike: _editedProfile.iLike,
                   isViewed: _editedProfile.isViewed,
                   whoLikedMe: _editedProfile.whoLikedMe,
                   intersectionLikes: _editedProfile.intersectionLikes,
@@ -369,6 +411,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                   interest: _editedProfile.interest,
                   address: _editedProfile.address,
                   imageUrls: _editedProfile.imageUrls,
+                  isSubscribed: _editedProfile.isSubscribed,
                 );
               },
             ),
@@ -550,6 +593,14 @@ class _UserInfoFormState extends State<UserInfoForm> {
               // autofocus: true,
               cursorColor: Colors.pink,
               decoration: InputDecoration(
+                errorBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.pink, width: 2),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.pink, width: 2),
+                  borderRadius: BorderRadius.circular(30),
+                ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: const BorderSide(color: Colors.pink, width: 2),
                   borderRadius: BorderRadius.circular(30),
@@ -575,7 +626,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                   phoneNo: _editedProfile.phoneNo,
                   gender: _editedProfile.gender,
                   genderChoice: _editedProfile.genderChoice,
-                  iLiked: _editedProfile.iLiked,
+                  iLike: _editedProfile.iLike,
                   isViewed: _editedProfile.isViewed,
                   whoLikedMe: _editedProfile.whoLikedMe,
                   intersectionLikes: _editedProfile.intersectionLikes,
@@ -586,6 +637,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                   interest: _editedProfile.interest,
                   address: _editedProfile.address,
                   imageUrls: _editedProfile.imageUrls,
+                  isSubscribed: _editedProfile.isSubscribed,
                 );
               },
             ),
@@ -673,6 +725,14 @@ class _UserInfoFormState extends State<UserInfoForm> {
               // autofocus: true,
               cursorColor: Colors.pink,
               decoration: InputDecoration(
+                errorBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.pink, width: 2),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.pink, width: 2),
+                  borderRadius: BorderRadius.circular(30),
+                ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: const BorderSide(color: Colors.pink, width: 2),
                   borderRadius: BorderRadius.circular(30),
@@ -703,7 +763,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                   phoneNo: _editedProfile.phoneNo,
                   gender: _editedProfile.gender,
                   genderChoice: _editedProfile.genderChoice,
-                  iLiked: _editedProfile.iLiked,
+                  iLike: _editedProfile.iLike,
                   isViewed: _editedProfile.isViewed,
                   whoLikedMe: _editedProfile.whoLikedMe,
                   intersectionLikes: _editedProfile.intersectionLikes,
@@ -714,6 +774,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                   interest: val.toString(),
                   address: _editedProfile.address,
                   imageUrls: _editedProfile.imageUrls,
+                  isSubscribed: _editedProfile.isSubscribed,
                 );
               },
             ),
@@ -725,6 +786,14 @@ class _UserInfoFormState extends State<UserInfoForm> {
               // autofocus: true,
               cursorColor: Colors.pink,
               decoration: InputDecoration(
+                errorBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.pink, width: 2),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.pink, width: 2),
+                  borderRadius: BorderRadius.circular(30),
+                ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: const BorderSide(color: Colors.pink, width: 2),
                   borderRadius: BorderRadius.circular(30),
@@ -749,7 +818,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                   phoneNo: _editedProfile.phoneNo,
                   gender: _editedProfile.gender,
                   genderChoice: _editedProfile.genderChoice,
-                  iLiked: _editedProfile.iLiked,
+                  iLike: _editedProfile.iLike,
                   isViewed: _editedProfile.isViewed,
                   whoLikedMe: _editedProfile.whoLikedMe,
                   intersectionLikes: _editedProfile.intersectionLikes,
@@ -760,6 +829,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                   interest: _editedProfile.interest,
                   address: val.toString(),
                   imageUrls: _editedProfile.imageUrls,
+                  isSubscribed: _editedProfile.isSubscribed,
                 );
               },
             ),
@@ -788,7 +858,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                     phoneNo: _editedProfile.phoneNo,
                     gender: _selectedGender.toString(),
                     genderChoice: _genderPreference.toString(),
-                    iLiked: _editedProfile.iLiked,
+                    iLike: _editedProfile.iLike,
                     isViewed: _editedProfile.isViewed,
                     whoLikedMe: _editedProfile.whoLikedMe,
                     intersectionLikes: _editedProfile.intersectionLikes,
@@ -799,6 +869,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
                     interest: _editedProfile.interest,
                     address: _editedProfile.address,
                     imageUrls: _editedProfile.imageUrls,
+                    isSubscribed: _editedProfile.isSubscribed,
                   );
                   saveForm();
                 },

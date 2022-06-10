@@ -32,14 +32,16 @@ class _PhoneLoginState extends State<PhoneLogin> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator(color: Colors.white,))
           : ListView(children: [
               const SizedBox(height: 20),
               Row(
                 children: [
                   const SizedBox(width: 15),
                   IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
                       icon: const Icon(
                         Icons.arrow_back_ios_new,
                         color: Colors.white,
@@ -91,6 +93,7 @@ class _PhoneLoginState extends State<PhoneLogin> {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: IntlPhoneField(
+                  initialCountryCode: 'IN',
                   controller: myNumberController,
                   dropdownTextStyle: const TextStyle(
                     color: Colors.white,

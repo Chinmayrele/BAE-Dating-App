@@ -28,14 +28,14 @@ class _OtpRequestState extends State<OtpRequest> {
   bool isLoading = false;
   bool isUserFirstTime = true;
 
-  snackBar(String message) {
-    return ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
+  // snackBar(String message) {
+  //   return ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(
+  //       content: Text(message),
+  //       duration: const Duration(seconds: 2),
+  //     ),
+  //   );
+  // }
 
   void signInWithPhoneCredential(PhoneAuthCredential phoneCredential) async {
     setState(() {
@@ -58,7 +58,7 @@ class _OtpRequestState extends State<OtpRequest> {
         ));
       }
     } on FirebaseException catch (e) {
-      snackBar(e.message.toString());
+      // snackBar(e.message.toString());
       setState(() {
         isLoading = false;
       });
@@ -165,7 +165,9 @@ class _OtpRequestState extends State<OtpRequest> {
                     child: Center(
                         child: isLoading
                             ? const Center(
-                                child: CircularProgressIndicator(),
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
                               )
                             : Text(
                                 "VERIFY".toUpperCase(),

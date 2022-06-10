@@ -1,20 +1,34 @@
+import 'package:bar_chat_dating_app/models/user_info.dart';
+import 'package:bar_chat_dating_app/providers/info_provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class PaymentIntegrate extends StatefulWidget {
-  PaymentIntegrate({Key? key}) : super(key: key);
+  const PaymentIntegrate({Key? key}) : super(key: key);
 
   @override
   State<PaymentIntegrate> createState() => _PaymentIntegrateState();
 }
 
 class _PaymentIntegrateState extends State<PaymentIntegrate> {
-  TextEditingController amountController = TextEditingController(text: '79');
+  TextEditingController amountController = TextEditingController(text: '99');
   late Razorpay _razorpay;
   late FocusNode _focusNode;
+  late InfoProviders result;
+  late UserInfos userProfiledata;
+  bool isLoading = true;
 
   @override
   void initState() {
+    result = Provider.of<InfoProviders>(context, listen: false);
+    result.fetchUSerProfileData().then((_) {
+      userProfiledata = result.userInfo[0];
+      setState(() {
+        isLoading = false;
+      });
+    });
     _focusNode = FocusNode();
     _razorpay = Razorpay();
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
@@ -23,8 +37,14 @@ class _PaymentIntegrateState extends State<PaymentIntegrate> {
     super.initState();
   }
 
-  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
     // Do something when payment succeeds
+    await FirebaseFirestore.instance
+        .collection('profile')
+        .doc(userProfiledata.userId)
+        .update({
+      "isSubscribed": true,
+    });
     debugPrint(
         "RESPONSE ORDERID: ${response.orderId}\nPAYMENT ID ${response.paymentId}\nSIGNATURE ${response.signature}");
   }
@@ -41,99 +61,156 @@ class _PaymentIntegrateState extends State<PaymentIntegrate> {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
     return Scaffold(
-      body: Column(
-        children: [
-          SizedBox(height: 60),
-          Row(
-            children: [
-              IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                    size: 28,
-                  )),
-              Text(
-                'PAYMENT GATEWAY',
-                style: TextStyle(
-                    color: Colors.pink,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20),
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+                color: Colors.white,
               ),
-            ],
-          ),
-          SizedBox(height: 45),
-          Center(
-            child: Text(
-              '𝓖𝓸 𝓟𝓻𝓮𝓶𝓲𝓾𝓶!',
-              style: TextStyle(
-                  color: Colors.red, fontSize: 42, fontWeight: FontWeight.bold),
-            ),
-          ),
-          SizedBox(height: 30),
-          Container(
-            margin: EdgeInsets.only(left: 15, right: 15),
-            child: TextField(
-              // focusNode: _focusNode,
-              readOnly: true,
-              keyboardType: TextInputType.number,
-              style: TextStyle(fontSize: 32, color: Colors.white),
-              controller: amountController,
-              decoration: InputDecoration(
-                fillColor: Colors.white24,
-                filled: true,
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25),
-                  borderSide: BorderSide(
-                    color: Colors.white,
-                    width: 2,
-                  ),
+            )
+          : Column(
+              children: [
+                const SizedBox(height: 60),
+                Row(
+                  children: [
+                    const SizedBox(width: 10),
+                    IconButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 28,
+                        )),
+                    const SizedBox(width: 20),
+                    const Text(
+                      'Payment Gateway',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22),
+                    ),
+                  ],
                 ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25),
-                  borderSide: BorderSide(
-                    color: Colors.white,
-                    width: 1,
+                const SizedBox(height: 5),
+                Container(
+                  height: size.height * 0.8,
+                  width: size.width * 0.9,
+                  decoration: BoxDecoration(
+                      color: Colors.indigoAccent,
+                      borderRadius: BorderRadius.circular(15),
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.indigo.withOpacity(0.4),
+                          Colors.indigo.withOpacity(0.6)
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      )),
+                  child: Column(
+                    children: [
+                      Center(
+                        child: RichText(
+                          text: const TextSpan(
+                              text: '𝓖𝓸 ',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 42,
+                                  fontWeight: FontWeight.bold),
+                              children: [
+                                TextSpan(
+                                    text: '𝓟𝓻𝓮𝓶𝓲𝓾𝓶!',
+                                    style: TextStyle(
+                                        color: Colors.pink,
+                                        fontSize: 42,
+                                        fontWeight: FontWeight.bold))
+                              ]),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      Container(
+                        margin: const EdgeInsets.only(left: 15, right: 15),
+                        child: TextField(
+                          // focusNode: _focusNode,
+                          readOnly: true,
+                          keyboardType: TextInputType.number,
+                          style: const TextStyle(
+                              fontSize: 32,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                          controller: amountController,
+                          decoration: InputDecoration(
+                            fillColor: Colors.white24,
+                            filled: true,
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                              borderSide: const BorderSide(
+                                color: Colors.pink,
+                                width: 2,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                              borderSide: const BorderSide(
+                                color: Colors.pink,
+                                width: 2,
+                              ),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                                width: 1,
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 15, horizontal: 20),
+                            prefixIcon: const Icon(
+                              Icons.currency_rupee_sharp,
+                              color: Colors.white,
+                              size: 32,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 25),
+                      buildRowText('Get Every Access', size),
+                      buildRowText('Start a conversation with you Match', size),
+                      buildRowText('See who liked you', size),
+                      buildRowText(
+                          'Find your perfect match faster with premium', size),
+                      const Spacer(),
+                      Container(
+                        height: 70,
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(
+                            left: 20, right: 20, bottom: 30),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            launchPayment();
+                          },
+                          child: const Text(
+                            'Make Payment',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                              elevation: 20,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20)),
+                              padding: const EdgeInsets.all(25),
+                              primary: Colors.pink),
+                        ),
+                      )
+                    ],
                   ),
-                ),
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                hintText: 'Enter Amount',
-                hintStyle: TextStyle(
-                    fontWeight: FontWeight.normal,
-                    color: Colors.white,
-                    fontSize: 18),
-                prefixIcon: Icon(Icons.payment_outlined, color: Colors.white),
-              ),
+                )
+              ],
             ),
-          ),
-          SizedBox(height: 50),
-          Container(
-            height: 70,
-            width: double.infinity,
-            margin: EdgeInsets.only(left: 20, right: 20),
-            child: ElevatedButton(
-              onPressed: () {
-                launchPayment();
-              },
-              child: Text(
-                'Make Payment',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18),
-              ),
-              style: ElevatedButton.styleFrom(
-                  elevation: 20,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                  padding: EdgeInsets.all(25),
-                  primary: Colors.pink),
-            ),
-          )
-        ],
-      ),
     );
   }
 
@@ -142,14 +219,42 @@ class _PaymentIntegrateState extends State<PaymentIntegrate> {
     var options = {
       'key': 'rzp_test_KuLoLYlScCzm2t',
       'amount': '$amountToPay',
-      'name': 'Acme Corp.',
-      'description': 'Fine T-Shirt',
-      'prefill': {'contact': '8888888888', 'email': 'test@razorpay.com'}
+      'name': userProfiledata.name,
+      'description': 'Premium Member for App',
+      'prefill': {
+        'contact': userProfiledata.phoneNo,
+        'email': userProfiledata.email
+      }
     };
     try {
       _razorpay.open(options);
     } catch (err) {
       debugPrint(err.toString());
     }
+  }
+
+  buildRowText(String text, Size size) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10, top: 10, left: 15),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.check_circle,
+            color: Colors.black,
+          ),
+          const SizedBox(width: 20),
+          SizedBox(
+            width: size.width * 0.7,
+            child: Text(
+              text,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+              ),
+            ),
+          )
+        ],
+      ),
+    );
   }
 }

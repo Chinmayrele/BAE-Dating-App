@@ -27,16 +27,16 @@ class _PersonInfoState extends State<PersonInfo> {
           children: [
             const SizedBox(height: 50),
             Row(
-              children: [
-                IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.pink,
-                      size: 26,
-                    )),
-                const SizedBox(width: 15),
-                const Text(
+              children: const [
+                // IconButton(
+                //     onPressed: () {},
+                //     icon: const Icon(
+                //       Icons.arrow_back,
+                //       color: Colors.pink,
+                //       size: 26,
+                //     )),
+                SizedBox(width: 22),
+                Text(
                   'Fill Profile',
                   style: TextStyle(
                       color: Colors.white,
@@ -45,7 +45,8 @@ class _PersonInfoState extends State<PersonInfo> {
                 ),
               ],
             ),
-            UserInfoForm(latitude: widget.latitude, longitude: widget.longitude),
+            UserInfoForm(
+                latitude: widget.latitude, longitude: widget.longitude),
           ],
         ),
       ),

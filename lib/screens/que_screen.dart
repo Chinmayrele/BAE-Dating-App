@@ -25,6 +25,15 @@ class _QueScreenState extends State<QueScreen> {
   String? _htStatus;
   bool isLoading = false;
 
+  snackBar(String message) {
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   // titleText(String text, bool isRequired) {
   //   return Container(
   //     margin: const EdgeInsets.only(left: 25, bottom: 8, top: 15),
@@ -51,19 +60,12 @@ class _QueScreenState extends State<QueScreen> {
             const SizedBox(height: 50),
             Row(
               children: [
-                IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.pink,
-                      size: 26,
-                    )),
-                const SizedBox(width: 15),
+                SizedBox(width: MediaQuery.of(context).size.width * 0.33),
                 const Text(
                   'Profile Info',
                   style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
+                      color: Colors.pink,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold),
                 ),
               ],
@@ -82,7 +84,7 @@ class _QueScreenState extends State<QueScreen> {
                 'Please answer the following questions so we could understand you better',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: 19,
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
@@ -179,8 +181,7 @@ class _QueScreenState extends State<QueScreen> {
                     ),
                     //2nd QUE
                     titleText(
-                        'What two words decribe your ideal location place?',
-                        true),
+                        'What would decribe your ideal location place?', true),
                     SizedBox(
                       width: double.infinity,
                       child: DropdownButtonHideUnderline(
@@ -662,7 +663,9 @@ class _QueScreenState extends State<QueScreen> {
               child: ElevatedButton(
                 child: isLoading
                     ? const Center(
-                        child: CircularProgressIndicator(),
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                        ),
                       )
                     : const Text(
                         'Continue',
@@ -672,6 +675,15 @@ class _QueScreenState extends State<QueScreen> {
                             fontSize: 17),
                       ),
                 onPressed: () async {
+                  if (_lookStatus!.isEmpty &&
+                      _vacaStatus!.isEmpty &&
+                      _nightStatus!.isEmpty &&
+                      _smokeStatus!.isEmpty &&
+                      _drinkStatus!.isEmpty &&
+                      _exerciseStatus!.isEmpty &&
+                      _htStatus!.isEmpty) {
+                    return snackBar('Please Fill all the info here!');
+                  }
                   setState(() {
                     isLoading = true;
                   });

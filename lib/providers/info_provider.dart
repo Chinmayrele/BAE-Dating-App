@@ -10,11 +10,13 @@ class InfoProviders with ChangeNotifier {
   final List<UserInfos> _usersData = [];
   // late UserInfos _userData;
   final List<QueAnsInfo> _queAnsInfo = [];
+  int _curIndex = 0;
 
   List<UserInfos> get userInfo => [..._userInfo];
   List<UserInfos> get usersData => [..._usersData];
   // UserInfos get userData => _userData;
   List<QueAnsInfo> get queAnsInfo => [..._queAnsInfo];
+  int get curIndex => _curIndex;
 
   Future<void> addUserProfileInfo(UserInfos info) async {
     await FirebaseFirestore.instance
@@ -27,7 +29,7 @@ class InfoProviders with ChangeNotifier {
       "phoneNo": info.phoneNo,
       "gender": info.gender,
       "genderChoice": info.genderChoice,
-      "iLiked": info.iLiked,
+      "iLike": info.iLike,
       "isViewed": info.isViewed,
       "whoLikedMe": info.whoLikedMe,
       "intersectionLikes": info.intersectionLikes,
@@ -37,7 +39,8 @@ class InfoProviders with ChangeNotifier {
       "about": info.about,
       "interest": info.interest,
       "address": info.address,
-      "imageUrls": info.imageUrls
+      "imageUrls": info.imageUrls,
+      "isSubscribed": info.isSubscribed,
     });
     notifyListeners();
   }
@@ -68,29 +71,32 @@ class InfoProviders with ChangeNotifier {
         .doc(userID)
         .get();
     final e = data.data();
-    final userData = UserInfos(
-        userId: e!['userId'],
-        name: e['name'],
-        email: e['email'],
-        phoneNo: e['phoneNo'],
-        gender: e['gender'],
-        genderChoice: e['genderChoice'],
-        iLiked: e['iLiked'],
-        isViewed: e['isViewed'],
-        whoLikedMe: e['whoLikedMe'],
-        intersectionLikes: e['intersectionLikes'],
-        latitude: e['latitude'],
-        longitude: e['longitude'],
-        age: e['age'],
-        about: e['about'],
-        interest: e['interest'],
-        address: e['address'],
-        imageUrls: e['imageUrls']);
+    final userDatas = UserInfos(
+      userId: e!['userId'],
+      name: e['name'],
+      email: e['email'],
+      phoneNo: e['phoneNo'],
+      gender: e['gender'],
+      genderChoice: e['genderChoice'],
+      iLike: e['iLike'],
+      isViewed: e['isViewed'],
+      whoLikedMe: e['whoLikedMe'],
+      intersectionLikes: e['intersectionLikes'],
+      latitude: e['latitude'],
+      longitude: e['longitude'],
+      age: e['age'],
+      about: e['about'],
+      interest: e['interest'],
+      address: e['address'],
+      imageUrls: e['imageUrls'],
+      isSubscribed: e['isSubscribed'],
+    );
     //IF GENDER && YOURSELF REMOVE CONDITION
     // if (users.userId != FirebaseAuth.instance.currentUser!.uid) {
     //   _usersData.add(users);
     // }
-    return userData;
+    print('USER DATA SINGLE FETCH PROVIDER: ${userDatas.latitude}');
+    return userDatas;
   }
 
   Future<void> fetchUsersData(
@@ -102,38 +108,39 @@ class InfoProviders with ChangeNotifier {
     final e = data.docs;
     for (int i = 0; i < e.length; i++) {
       final us = UserInfos(
-        userId: e[i]['userId'],
-        name: e[i]['name'],
-        email: e[i]['email'],
-        phoneNo: e[i]['phoneNo'],
-        gender: e[i]['gender'],
-        genderChoice: e[i]['genderChoice'],
-        iLiked: e[i]['iLiked'],
-        isViewed: e[i]['isViewed']??[],
-        whoLikedMe: e[i]['whoLikedMe'],
-        intersectionLikes: e[i]['intersectionLikes'],
-        latitude: e[i]['latitude'],
-        longitude: e[i]['longitude'],
-        age: e[i]['age'],
-        about: e[i]['about'],
-        interest: e[i]['interest'],
-        address: e[i]['address'],
-        imageUrls: e[i]['imageUrls'],
-      );
+          userId: e[i]['userId'],
+          name: e[i]['name'],
+          email: e[i]['email'],
+          phoneNo: e[i]['phoneNo'],
+          gender: e[i]['gender'],
+          genderChoice: e[i]['genderChoice'],
+          iLike: e[i]['iLike'],
+          isViewed: e[i]['isViewed'],
+          whoLikedMe: e[i]['whoLikedMe'],
+          intersectionLikes: e[i]['intersectionLikes'],
+          latitude: e[i]['latitude'],
+          longitude: e[i]['longitude'],
+          age: e[i]['age'],
+          about: e[i]['about'],
+          interest: e[i]['interest'],
+          address: e[i]['address'],
+          imageUrls: e[i]['imageUrls'],
+          isSubscribed: e[i]['isSubscribed']);
       final distance =
           Geolocator.distanceBetween(lati, longi, us.latitude, us.longitude);
 
       //  IF GENDER && YOURSELF REMOVE CONDITION   && !_userInfo[0].isViewed.contains(us.userId)
       if (us.gender.toLowerCase() == genderPreference.toLowerCase() &&
           us.userId != FirebaseAuth.instance.currentUser!.uid &&
-          distance < 100000 && !_userInfo[0].isViewed.contains(us.userId)) {
+          distance < 100000 &&
+          !_userInfo[0].isViewed.contains(us.userId)) {
         _usersData.add(us);
       }
     }
     notifyListeners();
   }
 
-  Future<void> fetchQueAnsData(String useId) async {
+  Future<QueAnsInfo> fetchQueAnsData(String useId) async {
     print('12342353464565786786756545756585857857');
     final data = await FirebaseFirestore.instance
         .collection('profile')
@@ -152,11 +159,11 @@ class InfoProviders with ChangeNotifier {
       heightStatus: e['heightStatus'],
     );
     print(data.data().toString());
-    print('///////////////////');
-    _queAnsInfo.add(userInf);
-    print(
-        "QUE ANS FETCH METHOD PROVIDER VACATION STATUS: ${_queAnsInfo[0].vacationStatus}");
-    notifyListeners();
+    return userInf;
+    // _queAnsInfo.add(userInf);
+    // print(
+    //     "QUE ANS FETCH METHOD PROVIDER VACATION STATUS: ${_queAnsInfo[0].vacationStatus}");
+    // notifyListeners();
   }
 
   Future<void> fetchUSerProfileData() async {
@@ -167,27 +174,34 @@ class InfoProviders with ChangeNotifier {
         .get();
     final e = data.data();
     final userInf = UserInfos(
-        userId: e!['userId'],
-        name: e['name'],
-        email: e['email'],
-        phoneNo: e['phoneNo'],
-        gender: e['gender'],
-        genderChoice: e['genderChoice'],
-        iLiked: e['iLiked'],
-        isViewed: e['isViewed'],
-        whoLikedMe: e['whoLikedMe'],
-        intersectionLikes: e['intersectionLikes'],
-        latitude: e['latitude'],
-        longitude: e['longitude'],
-        age: e['age'],
-        about: e['about'],
-        interest: e['interest'],
-        address: e['address'],
-        imageUrls: e['imageUrls']);
+      userId: e!['userId'],
+      name: e['name'],
+      email: e['email'],
+      phoneNo: e['phoneNo'],
+      gender: e['gender'],
+      genderChoice: e['genderChoice'],
+      iLike: e['iLike'],
+      isViewed: e['isViewed'],
+      whoLikedMe: e['whoLikedMe'],
+      intersectionLikes: e['intersectionLikes'],
+      latitude: e['latitude'],
+      longitude: e['longitude'],
+      age: e['age'],
+      about: e['about'],
+      interest: e['interest'],
+      address: e['address'],
+      imageUrls: e['imageUrls'],
+      isSubscribed: e['isSubscribed'],
+    );
     print(data.data().toString());
     print('///////////////////');
     _userInfo.add(userInf);
     print("FETCH PROFILE USER DATA PROVIDER NAME: ${_userInfo[0].name}");
     notifyListeners();
+  }
+
+  changeIndex(int ind) {
+    _curIndex = ind;
+    // notifyListeners();
   }
 }

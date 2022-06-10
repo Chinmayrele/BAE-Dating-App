@@ -1,10 +1,5 @@
-import 'package:bar_chat_dating_app/screens/explore_screen.dart';
+import 'package:bar_chat_dating_app/screens/card_stack.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-// import 'package:flutter_tinder_clone_app/screens/account_screen.dart';
-// import 'package:flutter_tinder_clone_app/screens/chat_screen.dart';
-// import 'package:flutter_tinder_clone_app/screens/explore_screen.dart';
-// import 'package:flutter_tinder_clone_app/screens/like_screen.dart';
 
 import './account_screen.dart';
 import './chat_screen.dart';
@@ -13,7 +8,7 @@ import './like_screen.dart';
 /*
 Title:HomePageScreen
 Purpose:HomePageScreen
-Created By:Kalpesh Khandla
+Created By:Chinmay Rele
 */
 
 class HomePageScreen extends StatefulWidget {
@@ -24,66 +19,67 @@ class HomePageScreen extends StatefulWidget {
 
 class _HomePageScreenState extends State<HomePageScreen> {
   int pageIndex = 0;
-  
+  final screens = [
+    const CardsStackWidget(),
+    const LikesScreen(),
+    const ChatScreen(),
+    const AccountScreen(),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.white,
-      // appBar: AppBarWidget(),
-      body: getBody(),
-      bottomNavigationBar: appBarWidget(),
-    );
-  }
-
-  Widget getBody() {
-    return IndexedStack(
-      index: pageIndex,
-      children: const [
-        ExploreScreen(),
-        LikesScreen(),
-        ChatScreen(),
-        AccountScreen(),
-      ],
-    );
-  }
-
-  Widget appBarWidget() {
-    List bottomItems = [
-      pageIndex == 0 ? "assets/images/cmyk.png" : "assets/images/cmyk2.png",
-      pageIndex == 1
-          ? "assets/images/likes_active_icon.svg"
-          : "assets/images/likes_icon.svg",
-      pageIndex == 2
-          ? "assets/images/chat_active_icon.svg"
-          : "assets/images/chat_icon.svg",
-      pageIndex == 3
-          ? "assets/images/account_active_icon.svg"
-          : "assets/images/account_icon.svg",
-    ];
-    // return AppBar(
-    //   backgroundColor: Colors.black,
-    //   elevation: 0,
-    return Container(
-      decoration: const BoxDecoration(color: Colors.white12),
-      padding: const EdgeInsets.only(left: 10, right: 10, bottom: 18, top: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: List.generate(bottomItems.length, (index) {
-          return IconButton(
-            onPressed: () {
-              setState(() {
-                pageIndex = index;
-              });
-            },
-            icon: index == 0
-                ? Image.asset(bottomItems[index])
-                : SvgPicture.asset(
-                    bottomItems[index],
-                  ),
-          );
-        }),
+      body: screens[pageIndex],
+      bottomNavigationBar: NavigationBarTheme(
+        data: NavigationBarThemeData(
+            backgroundColor: Colors.white12,
+            indicatorColor: Colors.transparent,
+            labelTextStyle: MaterialStateProperty.all(
+                const TextStyle(color: Colors.transparent))),
+        child: NavigationBar(
+          height: 70,
+          selectedIndex: pageIndex,
+          onDestinationSelected: (index) {
+            setState(() {
+              pageIndex = index;
+            });
+          },
+          destinations: [
+            NavigationDestination(
+              icon: Icon(
+                Icons.home,
+                size: 34,
+                color: pageIndex == 0 ? Colors.redAccent : Colors.grey,
+              ),
+              label: 'Home',
+            ),
+            NavigationDestination(
+              icon: Icon(
+                Icons.favorite,
+                size: 32,
+                color: pageIndex == 1 ? Colors.amber : Colors.grey,
+              ),
+              label: 'Feed',
+            ),
+            NavigationDestination(
+              icon: Icon(
+                Icons.message,
+                size: 32,
+                color: pageIndex == 2 ? Colors.indigo : Colors.grey,
+              ),
+              label: 'Message',
+            ),
+            NavigationDestination(
+              icon: Icon(
+                Icons.person_pin,
+                size: 32,
+                color: pageIndex == 3 ? Colors.orange : Colors.grey,
+              ),
+              label: 'Account',
+            ),
+          ],
+        ),
       ),
-      // ),
     );
   }
 }

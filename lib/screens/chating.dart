@@ -1,11 +1,12 @@
 import 'package:bar_chat_dating_app/data/message_bubble.dart';
+import 'package:bar_chat_dating_app/models/user_info.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Chatting extends StatefulWidget {
-  final String chatterUserId;
-  const Chatting({Key? key, required this.chatterUserId}) : super(key: key);
+  final UserInfos chatterUser;
+  const Chatting({Key? key, required this.chatterUser}) : super(key: key);
 
   @override
   State<Chatting> createState() => _ChattingState();
@@ -14,13 +15,14 @@ class Chatting extends StatefulWidget {
 class _ChattingState extends State<Chatting> {
   @override
   Widget build(BuildContext context) {
-  final logUserId = FirebaseAuth.instance.currentUser!.uid;
-  final strCompare = logUserId.compareTo(widget.chatterUserId);
+    var size = MediaQuery.of(context).size;
+    final logUserId = FirebaseAuth.instance.currentUser!.uid;
+    final strCompare = logUserId.compareTo(widget.chatterUser.userId);
     final docId = strCompare == -1
-        ? logUserId + widget.chatterUserId
-        : widget.chatterUserId + logUserId;
+        ? logUserId + widget.chatterUser.userId
+        : widget.chatterUser.userId + logUserId;
     return Container(
-      height: MediaQuery.of(context).size.height * 0.87,
+      height: size.height * 0.74,
       padding: const EdgeInsets.all(10),
       child: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -32,7 +34,7 @@ class _ChattingState extends State<Chatting> {
         builder: (context, streamSnapshots) {
           if (streamSnapshots.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(color: Colors.white,),
             );
           }
           final chatDocs = streamSnapshots.data!.docs;

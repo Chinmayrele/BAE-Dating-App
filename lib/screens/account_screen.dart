@@ -86,9 +86,11 @@ class _AccountScreenState extends State<AccountScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // backgroundColor: ColorConstants.kGrey.withOpacity(0.2),
-      body: isLoading ? const CircularProgressIndicator() : getBody(),
+    return SafeArea(
+      child: Scaffold(
+        // backgroundColor: ColorConstants.kGrey.withOpacity(0.2),
+        body: isLoading ? const Center(child: CircularProgressIndicator(color: Colors.white,)) : getBody(),
+      ),
     );
   }
 
@@ -112,7 +114,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 ),
               ]),
               child: Padding(
-                padding: const EdgeInsets.only(left: 30, right: 30, bottom: 40),
+                padding: const EdgeInsets.only(left: 30, right: 30, bottom: 60),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -155,6 +157,8 @@ class _AccountScreenState extends State<AccountScreen> {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: ColorConstants.kWhite,
+                                  border:
+                                      Border.all(color: Colors.grey, width: 1),
                                   boxShadow: [
                                     BoxShadow(
                                       color:
@@ -168,7 +172,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                 child: Icon(
                                   Icons.workspace_premium_outlined,
                                   size: 35,
-                                  color: ColorConstants.kGrey.withOpacity(0.5),
+                                  color: ColorConstants.kGrey.withOpacity(0.8),
                                 ),
                               ),
                             ),
@@ -252,6 +256,8 @@ class _AccountScreenState extends State<AccountScreen> {
                                 height: 60,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
+                                  border:
+                                      Border.all(color: Colors.grey, width: 1),
                                   color: ColorConstants.kWhite,
                                   boxShadow: [
                                     BoxShadow(
@@ -266,7 +272,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                 child: Icon(
                                   Icons.logout,
                                   size: 35,
-                                  color: ColorConstants.kGrey.withOpacity(0.5),
+                                  color: ColorConstants.kGrey.withOpacity(0.8),
                                 ),
                               ),
                             ),
@@ -442,10 +448,20 @@ class _ImageContainerState extends State<ImageContainer> {
                         size: 48,
                         color: Colors.pink,
                       ))
-                    : Image.network(
-                        url,
-                        fit: BoxFit.cover,
-                      )),
+                    : Image.network(url, fit: BoxFit.cover, loadingBuilder:
+                        (BuildContext context, Widget child,
+                            ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
+                      })),
           ),
         ),
       ),
