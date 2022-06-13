@@ -63,7 +63,7 @@ class InfoProviders with ChangeNotifier {
   }
 
   Future<UserInfos> fetchSingleUserData(String userID) async {
-    print('USER ID FETCHING...');
+    //debugPrint('USER ID FETCHING...');
     final data = await FirebaseFirestore.instance
         .collection('profile')
         .doc(userID)
@@ -89,20 +89,15 @@ class InfoProviders with ChangeNotifier {
       imageUrls: e['imageUrls'],
       isSubscribed: e['isSubscribed'],
     );
-    //IF GENDER && YOURSELF REMOVE CONDITION
-    // if (users.userId != FirebaseAuth.instance.currentUser!.uid) {
-    //   _usersData.add(users);
-    // }
-    print('USER DATA SINGLE FETCH PROVIDER: ${userDatas.latitude}');
     return userDatas;
   }
 
   Future<void> fetchUsersData(
       String genderPreference, double lati, double longi) async {
-    print('12342353464565786786756545756585857857');
+    //debugPrint('12342353464565786786756545756585857857');
     final data = await FirebaseFirestore.instance.collection('profile').get();
-    print("DATA SIZE IMP: ${data.size}");
-    print("DATA DOCS LENGTH: ${data.docs.length}");
+    //debugPrint("DATA SIZE IMP: ${data.size}");
+    //debugPrint("DATA DOCS LENGTH: ${data.docs.length}");
     final e = data.docs;
     for (int i = 0; i < e.length; i++) {
       final us = UserInfos(
@@ -142,7 +137,7 @@ class InfoProviders with ChangeNotifier {
         //   }
         // }
         // if (flag == 1) {
-          _usersData.add(us);
+        _usersData.add(us);
         // }
       }
     }
@@ -150,7 +145,7 @@ class InfoProviders with ChangeNotifier {
   }
 
   Future<QueAnsInfo> fetchQueAnsData(String useId) async {
-    print('12342353464565786786756545756585857857');
+    //debugPrint('12342353464565786786756545756585857857');
     final data = await FirebaseFirestore.instance
         .collection('profile')
         .doc(useId)
@@ -167,16 +162,16 @@ class InfoProviders with ChangeNotifier {
       nightStatus: e['nightStatus'],
       heightStatus: e['heightStatus'],
     );
-    print(data.data().toString());
+    //debugPrint(data.data().toString());
     return userInf;
     // _queAnsInfo.add(userInf);
-    // print(
+    // //debugPrint(
     //     "QUE ANS FETCH METHOD PROVIDER VACATION STATUS: ${_queAnsInfo[0].vacationStatus}");
     // notifyListeners();
   }
 
   Future<void> fetchUSerProfileData() async {
-    print('12342353464565786786756545756585857857');
+    //debugPrint('12342353464565786786756545756585857857');
     final data = await FirebaseFirestore.instance
         .collection('profile')
         .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -202,10 +197,10 @@ class InfoProviders with ChangeNotifier {
       imageUrls: e['imageUrls'],
       isSubscribed: e['isSubscribed'],
     );
-    print(data.data().toString());
-    print('///////////////////');
+    //debugPrint(data.data().toString());
+    //debugPrint('///////////////////');
     _userInfo.add(userInf);
-    print("FETCH PROFILE USER DATA PROVIDER NAME: ${_userInfo[0].name}");
+    //debugPrint("FETCH PROFILE USER DATA PROVIDER NAME: ${_userInfo[0].name}");
     notifyListeners();
   }
 }

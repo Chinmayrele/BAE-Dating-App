@@ -47,7 +47,7 @@ class _SignUpState extends State<SignUp> {
       if (err.message != null) {
         message = err.message.toString();
       }
-      debugPrint('$Error' + message);
+      //debugPrint('$Error' + message);
       ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
         content: Text(message),
         backgroundColor: Theme.of(ctx).errorColor,
@@ -63,7 +63,7 @@ class _SignUpState extends State<SignUp> {
       setState(() {
         _isLoading = false;
       });
-      debugPrint(err.toString());
+      //debugPrint(err.toString());
     }
   }
 

@@ -1,11 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-// import 'package:flutter_tinder_clone_app/auth/login.dart';
-// import 'package:flutter_tinder_clone_app/auth/signup.dart';
-// // import 'package:mobiflix_flutter/auth/signup.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
-// import 'package:flutter_tinder_clone_app/screens/login_number.dart';
-// import 'package:flutter_tinder_clone_app/screens/phone_login.dart';
 
 import '../auth/login.dart';
 import './phone_login.dart';

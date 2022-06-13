@@ -19,7 +19,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    print("INIT State");
+    //debugPrint("INIT State");
     timerFunction();
 
     super.initState();
@@ -27,35 +27,35 @@ class _SplashScreenState extends State<SplashScreen> {
 
   timerFunction() async {
     Future.delayed(const Duration(seconds: 3), () async {
-    final String isVisited = await getVisitingFlag();
-    print("Value String: ${isVisited}");
-    if (isVisited.isNotEmpty) {
-      Map<String, dynamic> mp = json.decode(isVisited);
-      print("Value : ${mp.length}");
-      if (mp.containsKey('isProfileDone') && mp['isProfileDone']) {
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (ctx) => const HomePageScreen()));
-      } else if (mp.containsKey('isLocDone') && mp['isLocDone']) {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (ctx) => PersonInfo(
-                  isEdit: false,
-                )));
-      } else if (mp.containsKey('isQueAnsDone') && mp['isQueAnsDone']) {
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (ctx) => const LocationPermi()));
+      final String isVisited = await getVisitingFlag();
+      //debugPrint("Value String: ${isVisited}");
+      if (isVisited.isNotEmpty) {
+        Map<String, dynamic> mp = json.decode(isVisited);
+        //debugPrint("Value : ${mp.length}");
+        if (mp.containsKey('isProfileDone') && mp['isProfileDone']) {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (ctx) => const HomePageScreen()));
+        } else if (mp.containsKey('isLocDone') && mp['isLocDone']) {
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (ctx) => PersonInfo(
+                    isEdit: false,
+                  )));
+        } else if (mp.containsKey('isQueAnsDone') && mp['isQueAnsDone']) {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (ctx) => const LocationPermi()));
+        } else {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (ctx) => const QueScreen()));
+        }
       } else {
         Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (ctx) => const QueScreen()));
+            MaterialPageRoute(builder: (ctx) => const StartScreen()));
       }
-    } else {
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (ctx) => const StartScreen()));
-    }
 
-    // setState(() {
-    //   Navigator.pushReplacement(
-    //       context, MaterialPageRoute(builder: (ctx) => const StartScreen()));
-    // });
+      // setState(() {
+      //   Navigator.pushReplacement(
+      //       context, MaterialPageRoute(builder: (ctx) => const StartScreen()));
+      // });
     });
   }
 

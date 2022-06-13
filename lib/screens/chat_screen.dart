@@ -29,7 +29,7 @@ class _ChatScreenState extends State<ChatScreen> {
   // int indexR = 0;
   @override
   void initState() {
-    print('INIT STATE OF CHAT SCREEN CALLED........');
+    //debugPrint('INIT STATE OF CHAT SCREEN CALLED........');
     result = Provider.of<InfoProviders>(context, listen: false);
     result.fetchUSerProfileData().then((value) {
       intersectionUid = result.userInfo[0].intersectionLikes;
@@ -39,17 +39,17 @@ class _ChatScreenState extends State<ChatScreen> {
           isLoading = false;
         });
       }
-      print('UID INTERSECTION: ${intersectionUid[0]}');
+      //debugPrint('UID INTERSECTION: ${intersectionUid[0]}');
       for (int i = 0; i < intersectionUid.length; i++) {
         result.fetchSingleUserData(intersectionUid[i]).then((value) {
-          print(value.email);
+          //debugPrint(value.email);
           intersectionUserLikes.add(value);
           setState(() {
             isLoading = false;
           });
         });
       }
-      // print('INTERSECTION LIKES ID: ${intersectionUserLikes[0]}');
+      // //debugPrint('INTERSECTION LIKES ID: ${intersectionUserLikes[0]}');
     });
     super.initState();
   }

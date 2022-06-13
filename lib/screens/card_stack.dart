@@ -62,9 +62,11 @@ class _CardsStackWidgetState extends State<CardsStackWidget> {
       //     }
       //   }
       // }
-      print("LENGTH OF USERPROFILE DATA:  ${userProfileDataResult.length}");
-      print('EXPLORE SCREEN INIT STATE 1st PRINT');
-      print("GENDER CHOICE USER: ${userProfileDataResult[0].genderChoice}");
+      //debugPrint(
+          //"LENGTH OF USERPROFILE DATA:  ${userProfileDataResult.length}");
+      //debugPrint('EXPLORE SCREEN INIT STATE 1st PRINT');
+      //debugPrint(
+          //"GENDER CHOICE USER: ${userProfileDataResult[0].genderChoice}");
       result
           .fetchUsersData(
         userProfileDataResult[0].genderChoice,
@@ -72,11 +74,11 @@ class _CardsStackWidgetState extends State<CardsStackWidget> {
         userProfileDataResult[0].longitude,
       )
           .then((_) {
-        print('FETCH USER DATA ENTER THEN VALUE');
+        //debugPrint('FETCH USER DATA ENTER THEN VALUE');
         dragabbleItems = result.usersData;
 
-        if (dragabbleItems.isNotEmpty && dragabbleItems[0].userId !=
-            'zzzzzzzzzzzzzzzzzzzz') {
+        if (dragabbleItems.isNotEmpty &&
+            dragabbleItems[0].userId != 'zzzzzzzzzzzzzzzzzzzz') {
           dragabbleItems.insert(
               0,
               UserInfos(
@@ -100,7 +102,7 @@ class _CardsStackWidgetState extends State<CardsStackWidget> {
                   isSubscribed: false));
         }
         itemLength = result.usersData.length;
-        print("ITEM LENGTH: $itemLength");
+        //debugPrint("ITEM LENGTH: $itemLength");
         setState(() {
           isLoading = false;
         });
@@ -156,7 +158,7 @@ class _CardsStackWidgetState extends State<CardsStackWidget> {
     //         isSubscribed: false));
     //   }
     // }
-    print("LENGTH OF DRAGGABLE ITEMS IN BUILD: ${dragabbleItems.length}");
+    //debugPrint("LENGTH OF DRAGGABLE ITEMS IN BUILD: ${dragabbleItems.length}");
     return SafeArea(
       child: Scaffold(
           body: (isLoading && isUpdateLoad)
@@ -169,7 +171,7 @@ class _CardsStackWidgetState extends State<CardsStackWidget> {
   }
 
   Widget getBody() {
-    print("NAME IN BUILD NOWW: ${dragabbleItems[0].name}");
+    // //debugPrint("NAME IN BUILD NOWW: ${dragabbleItems[0].name}");
     var size = MediaQuery.of(context).size;
     return Column(
       children: [

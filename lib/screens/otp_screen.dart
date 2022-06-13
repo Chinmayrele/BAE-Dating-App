@@ -121,10 +121,10 @@ class _OtpRequestState extends State<OtpRequest> {
                 controller: otpEditingController,
                 keyboardType: TextInputType.number,
                 onCompleted: (v) {
-                  debugPrint("Completed");
+                  //debugPrint("Completed");
                 },
                 onChanged: (value) {
-                  debugPrint(value);
+                  //debugPrint(value);
                   setState(() {
                     currentText = value;
                   });
@@ -141,7 +141,7 @@ class _OtpRequestState extends State<OtpRequest> {
                 ),
                 TextButton(
                     onPressed: () {
-                      debugPrint('OTP Resend!');
+                      //debugPrint('OTP Resend!');
                     },
                     child: const Text(
                       "RESEND",

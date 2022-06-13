@@ -27,7 +27,7 @@ class _LikesPageState extends State<LikesScreen> {
   bool isLoading = true;
   @override
   void initState() {
-    print("INTI STATE OF LIKE SCREEN IS CALLED>>>>>>");
+    //debugPrint("INTI STATE OF LIKE SCREEN IS CALLED>>>>>>");
     result = Provider.of<InfoProviders>(context, listen: false);
     result.fetchUSerProfileData().then((value) {
       userInf = result.userInfo[0].whoLikedMe;
@@ -104,9 +104,13 @@ class _LikesPageState extends State<LikesScreen> {
         const SizedBox(
           height: 10,
         ),
-        const Divider(
-          thickness: 0.8,
+        Divider(
+          thickness: 1.2,
+          endIndent: size.width * 0.03,
+          indent: size.width * 0.03,
+          color: Colors.white24,
         ),
+        const SizedBox(height: 12),
         likeData.isEmpty
             ? Column(
                 children: [

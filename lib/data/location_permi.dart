@@ -55,7 +55,7 @@ class _LocationPermiState extends State<LocationPermi> {
     await setLocationFlag(
         latitude: position.latitude, longitude: position.longitude);
     await setVisitingFlag(isLocDone: true);
-    print(lastPosition);
+    // //debugPrint(lastPosition);
     setState(() {
       locationMessage = '${position.latitude}, ${position.longitude}';
       latitude = position.latitude;

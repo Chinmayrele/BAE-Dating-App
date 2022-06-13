@@ -80,7 +80,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
         });
       }
     } on PlatformException catch (err) {
-      print('Failed to Pick up the Image: $err');
+      //debugPrint('Failed to Pick up the Image: $err');
     }
   }
 
@@ -90,8 +90,8 @@ class _UserInfoFormState extends State<UserInfoForm> {
       return;
     }
     _form.currentState!.save();
-    print(
-        "USER AGE ${_editedProfile.age}\nUSER GENDER ${_editedProfile.genderChoice}\nUSER NAME ${_editedProfile.name}");
+    //debugPrint(
+        //"USER AGE ${_editedProfile.age}\nUSER GENDER ${_editedProfile.genderChoice}\nUSER NAME ${_editedProfile.name}");
     //Firebase Logic
     //FIREBASE IMAGE STORAGE LOGIC
     if (_imageFile == null) {
@@ -109,7 +109,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
           if (task != null) {
             final snapshot = await task!.whenComplete(() {});
             final urlDownload = await snapshot.ref.getDownloadURL();
-            print('DOWNLOAD URL: $urlDownload');
+            //debugPrint('DOWNLOAD URL: $urlDownload');
             imageUrlsUser.add(urlDownload);
             _editedProfile = UserInfos(
               userId: _editedProfile.userId,
@@ -145,7 +145,7 @@ class _UserInfoFormState extends State<UserInfoForm> {
           }
         }
       } on FirebaseException catch (e) {
-        print('Error Uploading: $e');
+        //debugPrint('Error Uploading: $e');
       }
       // await profileUserInfo.addUserProfileInfo(_editedProfile);
       // await setVisitingFlag(isProfileDone: true);

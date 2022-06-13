@@ -30,7 +30,7 @@ class _LoginState extends State<Login> {
       if (isLogin) {
         authResult = await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: email, password: password);
-        debugPrint(authResult.toString());
+        //debugPrint(authResult.toString());
         if (authResult.user != null) {
           Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (ctx) => const QueScreen()));
@@ -58,7 +58,7 @@ class _LoginState extends State<Login> {
       setState(() {
         _isLoading = false;
       });
-      debugPrint(err.toString());
+      //debugPrint(err.toString());
     }
   }
 

@@ -45,18 +45,18 @@ class _PaymentIntegrateState extends State<PaymentIntegrate> {
         .update({
       "isSubscribed": true,
     });
-    debugPrint(
-        "RESPONSE ORDERID: ${response.orderId}\nPAYMENT ID ${response.paymentId}\nSIGNATURE ${response.signature}");
+    //debugPrint(
+        //"RESPONSE ORDERID: ${response.orderId}\nPAYMENT ID ${response.paymentId}\nSIGNATURE ${response.signature}");
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
     // Do something when payment fails
-    debugPrint("CODE: ${response.code}\nMESSAGE ${response.message}");
+    //debugPrint("CODE: ${response.code}\nMESSAGE ${response.message}");
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {
     // Do something when an external wallet was selected
-    debugPrint("WALLET NAME ${response.walletName}");
+    //debugPrint("WALLET NAME ${response.walletName}");
   }
 
   @override
@@ -229,7 +229,7 @@ class _PaymentIntegrateState extends State<PaymentIntegrate> {
     try {
       _razorpay.open(options);
     } catch (err) {
-      debugPrint(err.toString());
+      //debugPrint(err.toString());
     }
   }
 

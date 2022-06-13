@@ -61,7 +61,7 @@ class _AccountScreenState extends State<AccountScreen> {
   //       });
   //     }
   //   } on PlatformException catch (err) {
-  //     print('Failed to Pick up the Image: $err');
+  //     //debugPrint('Failed to Pick up the Image: $err');
   //   }
   // }
 
@@ -77,7 +77,7 @@ class _AccountScreenState extends State<AccountScreen> {
   //       }
   //       final snapshot = await task!.whenComplete(() {});
   //       urlDownload = await snapshot.ref.getDownloadURL();
-  //       print('DOWNLOAD URL: $urlDownload');
+  //       //debugPrint('DOWNLOAD URL: $urlDownload');
   //       imageUser.add(urlDownload);
   //       FirebaseFirestore.instance
   //           .collection('profile')
@@ -89,7 +89,7 @@ class _AccountScreenState extends State<AccountScreen> {
   //       setState(() {});
   //     }
   //   } on FirebaseException catch (e) {
-  //     print('Error Uploading: $e');
+  //     //debugPrint('Error Uploading: $e');
   //   }
   // }
 
@@ -346,7 +346,7 @@ class _ImageContainerState extends State<ImageContainer> {
         });
       }
     } on PlatformException catch (err) {
-      print('Failed to Pick up the Image: $err');
+      //debugPrint('Failed to Pick up the Image: $err');
     }
   }
 
@@ -362,7 +362,7 @@ class _ImageContainerState extends State<ImageContainer> {
         }
         final snapshot = await task!.whenComplete(() {});
         urlDownload = await snapshot.ref.getDownloadURL();
-        print('DOWNLOAD URL: $urlDownload');
+        //debugPrint('DOWNLOAD URL: $urlDownload');
         widget.imageList.add(urlDownload);
         // imageUrlsUser.add(urlDownload);
         FirebaseFirestore.instance
@@ -398,7 +398,7 @@ class _ImageContainerState extends State<ImageContainer> {
         // );
       }
     } on FirebaseException catch (e) {
-      print('Error Uploading: $e');
+      //debugPrint('Error Uploading: $e');
     }
   }
 
@@ -417,7 +417,7 @@ class _ImageContainerState extends State<ImageContainer> {
     //     .get()
     //     .then((data) {
     //   final e = data.data();
-    //   print(e.toString());
+    //   //debugPrint(e.toString());
     //   imageUrlsUser = e!['imageList'];
     //   setState(() {
     //     isLoad = false;
@@ -429,7 +429,7 @@ class _ImageContainerState extends State<ImageContainer> {
     //     .get();
     // // .then((data) {
     // final e = data.data();
-    // // print(e.toString());
+    // // //debugPrint(e.toString());
     // imageUrlsUser = e!['imageUrls'];
     // setState(() {
     //   isLoad = false;

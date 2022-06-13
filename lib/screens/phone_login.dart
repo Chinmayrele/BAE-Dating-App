@@ -158,11 +158,11 @@ class _PhoneLoginState extends State<PhoneLogin> {
                     //     fontWeight: FontWeight.bold),
                   ),
                   onChanged: (phone) {
-                    print(phone.completeNumber);
+                    //debugPrint(phone.completeNumber);
                     myPhoneNumber = phone.completeNumber;
                   },
                   onCountryChanged: (country) {
-                    print('Country changed to: ' + country.name);
+                    //debugPrint('Country changed to: ' + country.name);
                   },
                 ),
                 // TextField(
@@ -233,10 +233,10 @@ class _PhoneLoginState extends State<PhoneLogin> {
                     await auth.verifyPhoneNumber(
                       phoneNumber: myPhoneNumber,
                       verificationCompleted: (v) {
-                        debugPrint("TOKEN: ${v.token}");
-                        debugPrint("Verfication ID: ${v.verificationId}");
-                        debugPrint("Provider ID: ${v.providerId}");
-                        debugPrint("SIGN in Meyhod: ${v.signInMethod}");
+                        //debugPrint("TOKEN: ${v.token}");
+                        //debugPrint("Verfication ID: ${v.verificationId}");
+                        //debugPrint("Provider ID: ${v.providerId}");
+                        //debugPrint("SIGN in Meyhod: ${v.signInMethod}");
                         setState(() async {
                           isLoading = false;
                         });
