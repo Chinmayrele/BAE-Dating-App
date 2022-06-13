@@ -13,7 +13,7 @@ class PaymentIntegrate extends StatefulWidget {
 }
 
 class _PaymentIntegrateState extends State<PaymentIntegrate> {
-  TextEditingController amountController = TextEditingController(text: '99');
+  TextEditingController amountController = TextEditingController(text: '79');
   late Razorpay _razorpay;
   late FocusNode _focusNode;
   late InfoProviders result;
@@ -219,11 +219,11 @@ class _PaymentIntegrateState extends State<PaymentIntegrate> {
     var options = {
       'key': 'rzp_test_KuLoLYlScCzm2t',
       'amount': '$amountToPay',
-      'name': userProfiledata.name,
+      'name': 'GAUTHAM RAJ',
       'description': 'Premium Member for App',
       'prefill': {
-        'contact': userProfiledata.phoneNo,
-        'email': userProfiledata.email
+        'contact': 7338714037,
+        'email': 'rajmr1290@gmail.com'
       }
     };
     try {

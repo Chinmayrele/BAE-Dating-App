@@ -1,6 +1,7 @@
 import 'package:bar_chat_dating_app/data/location_permi.dart';
 import 'package:bar_chat_dating_app/models/que_ans_info.dart';
 import 'package:bar_chat_dating_app/providers/info_provider.dart';
+import 'package:bar_chat_dating_app/shared_preferences/user_values.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -700,7 +701,7 @@ class _QueScreenState extends State<QueScreen> {
                   setState(() {
                     isLoading = false;
                   });
-
+                  await setVisitingFlag(isQueAnsDone: true);
                   //NAVIGATE AFTER FIREBASE LOGIC
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
                       builder: (ctx) => const LocationPermi()));

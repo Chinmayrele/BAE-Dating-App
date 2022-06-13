@@ -1,3 +1,4 @@
+import 'package:bar_chat_dating_app/data/call_page.dart';
 import 'package:bar_chat_dating_app/providers/info_provider.dart';
 import 'package:bar_chat_dating_app/screens/card_stack.dart';
 import 'package:bar_chat_dating_app/screens/home_page_screen.dart';
@@ -34,21 +35,15 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(scaffoldBackgroundColor: Colors.black),
         home: const SplashScreen(),
         // home: const HomePageScreen(),
+        routes: {
+          // '/home_page': (context) => HomePage(),
+          '/call_page': (context) => const CallPage(),
+        },
       ),
     );
   }
 }
 
-setVisitingFlag() async {
-  SharedPreferences sharedPreference = await SharedPreferences.getInstance();
-  sharedPreference.setBool('alreadyVisitedUser', true);
-}
-
-getVisitingFlag() async {
-  SharedPreferences sharePreference = await SharedPreferences.getInstance();
-  bool alreadyVisited = sharePreference.getBool('alreadyVisitedUser') ?? false;
-  return alreadyVisited;
-}
 
 
 // import 'package:bar_chat_dating_app/providers/info_provider.dart';

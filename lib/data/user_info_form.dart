@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bar_chat_dating_app/providers/info_provider.dart';
 import 'package:bar_chat_dating_app/screens/card_stack.dart';
 import 'package:bar_chat_dating_app/screens/home_page_screen.dart';
+import 'package:bar_chat_dating_app/shared_preferences/user_values.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -130,6 +131,14 @@ class _UserInfoFormState extends State<UserInfoForm> {
               imageUrls: imageUrlsUser,
               isSubscribed: _editedProfile.isSubscribed,
             );
+            await profileUserInfo.addUserProfileInfo(_editedProfile);
+            await setVisitingFlag(isProfileDone: true);
+            setState(() {
+              isLoading = false;
+            });
+            //Navigate after Completeing Firebase Logic
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (ctx) => const HomePageScreen()));
           }
           if (task == null) {
             return;
@@ -138,13 +147,14 @@ class _UserInfoFormState extends State<UserInfoForm> {
       } on FirebaseException catch (e) {
         print('Error Uploading: $e');
       }
-      await profileUserInfo.addUserProfileInfo(_editedProfile);
-      setState(() {
-        isLoading = false;
-      });
-      //Navigate after Completeing Firebase Logic
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (ctx) => const HomePageScreen()));
+      // await profileUserInfo.addUserProfileInfo(_editedProfile);
+      // await setVisitingFlag(isProfileDone: true);
+      // setState(() {
+      //   isLoading = false;
+      // });
+      // //Navigate after Completeing Firebase Logic
+      // Navigator.of(context).pushReplacement(
+      //     MaterialPageRoute(builder: (ctx) => const HomePageScreen()));
     }
   }
 

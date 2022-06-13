@@ -36,6 +36,7 @@ class _AccountScreenState extends State<AccountScreen> {
   File? _imageFile;
   UploadTask? task;
   List<String> imageUrlsUser = [];
+  List<dynamic> imageUser = [];
 
   @override
   void initState() {
@@ -43,53 +44,66 @@ class _AccountScreenState extends State<AccountScreen> {
     result.fetchUSerProfileData().then((value) {
       setState(() {
         userData = result.userInfo;
+        imageUser = userData[0].imageUrls;
         isLoading = false;
       });
     });
     super.initState();
   }
 
-  Future<void> getPicture() async {
-    try {
-      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (image != null) {
-        final imageTemp = File(image.path);
-        setState(() {
-          _imageFile = imageTemp;
-        });
-      }
-    } on PlatformException catch (err) {
-      print('Failed to Pick up the Image: $err');
-    }
-  }
+  // Future<void> getPicture() async {
+  //   try {
+  //     final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+  //     if (image != null) {
+  //       final imageTemp = File(image.path);
+  //       setState(() {
+  //         _imageFile = imageTemp;
+  //       });
+  //     }
+  //   } on PlatformException catch (err) {
+  //     print('Failed to Pick up the Image: $err');
+  //   }
+  // }
 
-  Future<void> convertToUrl() async {
-    try {
-      if (_imageFile != null) {
-        final fileName = _imageFile!.path;
-        final destination = 'files/$fileName';
-        final ref = FirebaseStorage.instance.ref(destination);
-        task = ref.putFile(_imageFile!);
-        if (task == null) {
-          return;
-        }
-        final snapshot = await task!.whenComplete(() {});
-        urlDownload = await snapshot.ref.getDownloadURL();
-        print('DOWNLOAD URL: $urlDownload');
-        imageUrlsUser.add(urlDownload);
-        setState(() {});
-      }
-    } on FirebaseException catch (e) {
-      print('Error Uploading: $e');
-    }
-  }
+  // Future<void> convertToUrl() async {
+  //   try {
+  //     if (_imageFile != null) {
+  //       final fileName = _imageFile!.path;
+  //       final destination = 'files/$fileName';
+  //       final ref = FirebaseStorage.instance.ref(destination);
+  //       task = ref.putFile(_imageFile!);
+  //       if (task == null) {
+  //         return;
+  //       }
+  //       final snapshot = await task!.whenComplete(() {});
+  //       urlDownload = await snapshot.ref.getDownloadURL();
+  //       print('DOWNLOAD URL: $urlDownload');
+  //       imageUser.add(urlDownload);
+  //       FirebaseFirestore.instance
+  //           .collection('profile')
+  //           .doc(FirebaseAuth.instance.currentUser!.uid)
+  //           .update({
+  //             "imageUrls": imageUser,
+  //           });
+  //       imageUrlsUser.add(urlDownload);
+  //       setState(() {});
+  //     }
+  //   } on FirebaseException catch (e) {
+  //     print('Error Uploading: $e');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         // backgroundColor: ColorConstants.kGrey.withOpacity(0.2),
-        body: isLoading ? const Center(child: CircularProgressIndicator(color: Colors.white,)) : getBody(),
+        body: isLoading
+            ? const Center(
+                child: CircularProgressIndicator(
+                color: Colors.white,
+              ))
+            : getBody(),
       ),
     );
   }
@@ -297,7 +311,7 @@ class _AccountScreenState extends State<AccountScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          const ImageContainer(),
+          ImageContainer(imageList: imageUser),
         ],
       ),
     );
@@ -305,7 +319,8 @@ class _AccountScreenState extends State<AccountScreen> {
 }
 
 class ImageContainer extends StatefulWidget {
-  const ImageContainer({Key? key}) : super(key: key);
+  final List<dynamic> imageList;
+  const ImageContainer({Key? key, required this.imageList}) : super(key: key);
 
   @override
   State<ImageContainer> createState() => _ImageContainerState();
@@ -316,7 +331,7 @@ class _ImageContainerState extends State<ImageContainer> {
   String urlDownload = '';
   File? _imageFile;
   UploadTask? task;
-  List<dynamic> imageUrlsUser = [];
+  // List<dynamic> imageUrlsUser = [];
   late Map<String, dynamic> list;
   bool isLoad = true;
   // late InfoProviders result;
@@ -348,15 +363,22 @@ class _ImageContainerState extends State<ImageContainer> {
         final snapshot = await task!.whenComplete(() {});
         urlDownload = await snapshot.ref.getDownloadURL();
         print('DOWNLOAD URL: $urlDownload');
-        imageUrlsUser.add(urlDownload);
+        widget.imageList.add(urlDownload);
+        // imageUrlsUser.add(urlDownload);
         FirebaseFirestore.instance
             .collection('profile')
             .doc(FirebaseAuth.instance.currentUser!.uid)
-            .collection('imageList')
-            .doc(FirebaseAuth.instance.currentUser!.uid)
-            .set({
-          'imageList': imageUrlsUser,
+            .update({
+          'imageUrls': widget.imageList,
         });
+        // FirebaseFirestore.instance
+        //     .collection('profile')
+        //     .doc(FirebaseAuth.instance.currentUser!.uid)
+        //     .collection('imageList')
+        //     .doc(FirebaseAuth.instance.currentUser!.uid)
+        //     .set({
+        //   'imageList': imageUrlsUser,
+        // });
         //     .add({
         //   'imageList': imageUrlsUser,
         // });
@@ -386,32 +408,44 @@ class _ImageContainerState extends State<ImageContainer> {
     super.initState();
   }
 
-  callImageList() {
-    final data = FirebaseFirestore.instance
-        .collection('profile')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection('imageList')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get()
-        .then((data) {
-      final e = data.data();
-      print(e.toString());
-      imageUrlsUser = e!['imageList'];
-      setState(() {
-        isLoad = false;
-      });
-    });
+  callImageList() async {
+    // final data = FirebaseFirestore.instance
+    //     .collection('profile')
+    //     .doc(FirebaseAuth.instance.currentUser!.uid)
+    //     .collection('imageList')
+    //     .doc(FirebaseAuth.instance.currentUser!.uid)
+    //     .get()
+    //     .then((data) {
+    //   final e = data.data();
+    //   print(e.toString());
+    //   imageUrlsUser = e!['imageList'];
+    //   setState(() {
+    //     isLoad = false;
+    //   });
+    // });
+    // final data = await FirebaseFirestore.instance
+    //     .collection('profile')
+    //     .doc(FirebaseAuth.instance.currentUser!.uid)
+    //     .get();
+    // // .then((data) {
+    // final e = data.data();
+    // // print(e.toString());
+    // imageUrlsUser = e!['imageUrls'];
+    // setState(() {
+    //   isLoad = false;
+    //   // });
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
-    int x = 4 - imageUrlsUser.length;
+    int x = 4 - widget.imageList.length;
 
     return Wrap(
       children: [
-        ...List.generate(imageUrlsUser.length,
-            (index) => buildBorderBox(imageUrlsUser[index])),
-        ...List.generate(x, ((index) => buildBorderBox(''))),
+        ...List.generate(widget.imageList.length - 1,
+            (index) => buildBorderBox(widget.imageList[index + 1])),
+        ...List.generate(x + 1, ((index) => buildBorderBox(''))),
       ],
     );
   }

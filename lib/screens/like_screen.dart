@@ -56,7 +56,9 @@ class _LikesPageState extends State<LikesScreen> {
         // backgroundColor: ColorConstants.kWhite,
         body: isLoading
             ? const Center(
-                child: CircularProgressIndicator(color: Colors.white,),
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                ),
               )
             : getBody(),
         // bottomSheet: getFooter(),
@@ -73,26 +75,29 @@ class _LikesPageState extends State<LikesScreen> {
         Padding(
           padding: const EdgeInsets.only(top: 20),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            // mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Text(
-                likes_json.length.toString() + " Likes",
-                style: TextStyle(
-                  fontSize: 18,
-                  color: ColorConstants.kWhite.withOpacity(0.7),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Center(
-                child: Text(
-                  "Top Picks",
+              Container(
+                margin: EdgeInsets.only(left: size.width * 0.1),
+                child: const Text(
+                  "See who liked you",
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 22,
+                    color: ColorConstants.kWhite,
                     fontWeight: FontWeight.bold,
-                    color: ColorConstants.kWhite.withOpacity(0.7),
                   ),
                 ),
               ),
+              // Center(
+              //   child: Text(
+              //     "Top Picks",
+              //     style: TextStyle(
+              //       fontSize: 18,
+              //       fontWeight: FontWeight.bold,
+              //       color: ColorConstants.kWhite.withOpacity(0.7),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),
@@ -105,10 +110,10 @@ class _LikesPageState extends State<LikesScreen> {
         likeData.isEmpty
             ? Column(
                 children: [
-                  SizedBox(height: size.height * 0.4),
+                  SizedBox(height: size.height * 0.35),
                   const Center(
                     child: Text(
-                      'Looks Like no one liked you!!!',
+                      'Looks like no one liked you!!!',
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,

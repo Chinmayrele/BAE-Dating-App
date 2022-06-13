@@ -1,5 +1,7 @@
 import 'package:bar_chat_dating_app/models/user_info.dart';
 import 'package:bar_chat_dating_app/screens/subscription_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -19,6 +21,8 @@ class _CardsStackWidgetState extends State<CardsStackWidget> {
   late List<UserInfos> userProfileDataResult;
   late List<UserInfos> usersDataResult;
   bool isLoading = true;
+  bool isUpdateLoad = true;
+  int countLikes = 0;
   List<dynamic> iLike = [];
   List isViewed = [];
   List whoLikedMe = [];
@@ -36,10 +40,28 @@ class _CardsStackWidgetState extends State<CardsStackWidget> {
     result.fetchUSerProfileData().then((_) {
       userProfileDataResult = result.userInfo;
       iLike = userProfileDataResult[0].iLike;
+      // countLikes = iLike.length;
       // tempILike = userProfileDataResult[0].iLike;
       isViewed = userProfileDataResult[0].isViewed;
       whoLikedMe = userProfileDataResult[0].whoLikedMe;
       intersectionOfLikes = userProfileDataResult[0].intersectionLikes;
+      // for (var i in iLike) {
+      //   for (var j in whoLikedMe) {
+      //     if (i == j) {
+      //       if (!intersectionOfLikes.contains(i)) {
+      //         intersectionOfLikes.add(i);
+      //         FirebaseFirestore.instance
+      //             .collection('profile')
+      //             .doc(FirebaseAuth.instance.currentUser!.uid)
+      //             .update({
+      //           "intersectionLikes": intersectionOfLikes,
+      //         }).then((_) {
+      //           isUpdateLoad = false;
+      //         });
+      //       }
+      //     }
+      //   }
+      // }
       print("LENGTH OF USERPROFILE DATA:  ${userProfileDataResult.length}");
       print('EXPLORE SCREEN INIT STATE 1st PRINT');
       print("GENDER CHOICE USER: ${userProfileDataResult[0].genderChoice}");
@@ -56,6 +78,30 @@ class _CardsStackWidgetState extends State<CardsStackWidget> {
           print('LONGITUDE: ${result.usersData[0].longitude}');
         }
         dragabbleItems = result.usersData;
+        // if (dragabbleItems[dragabbleItems.length - 1].userId !=
+        //     'zzzzzzzzzzzzzzzzzzzz') {
+        //   dragabbleItems.insert(
+        //       dragabbleItems.length,
+        //       UserInfos(
+        //           userId: 'zzzzzzzzzzzzzzzzzzzz',
+        //           name: 'name',
+        //           email: 'email',
+        //           phoneNo: 'phoneNo',
+        //           gender: 'gender',
+        //           genderChoice: 'genderChoice',
+        //           age: 0,
+        //           isViewed: [],
+        //           whoLikedMe: [],
+        //           iLike: [],
+        //           intersectionLikes: [],
+        //           latitude: 0,
+        //           longitude: 0,
+        //           about: 'about',
+        //           interest: 'interest',
+        //           address: 'address',
+        //           imageUrls: [],
+        //           isSubscribed: false));
+        // }
         itemLength = result.usersData.length;
         print("ITEM LENGTH: $itemLength");
         setState(() {
@@ -71,9 +117,52 @@ class _CardsStackWidgetState extends State<CardsStackWidget> {
 
   @override
   Widget build(BuildContext context) {
+    countLikes = iLike.length;
+    for (var i in iLike) {
+      for (var j in whoLikedMe) {
+        if (i == j) {
+          if (!intersectionOfLikes.contains(i)) {
+            intersectionOfLikes.add(i);
+            FirebaseFirestore.instance
+                .collection('profile')
+                .doc(FirebaseAuth.instance.currentUser!.uid)
+                .update({
+              "intersectionLikes": intersectionOfLikes,
+            }).then((_) {
+              isUpdateLoad = false;
+            });
+          }
+        }
+      }
+    }
+    // if (!isLoading && !isUpdateLoad) {
+    //   if (dragabbleItems[dragabbleItems.length - 1].userId !=
+    //       'zzzzzzzzzzzzzzzzzzzz') {
+    //     dragabbleItems.add(UserInfos(
+    //         userId: 'zzzzzzzzzzzzzzzzzzzz',
+    //         name: 'name',
+    //         email: 'email',
+    //         phoneNo: 'phoneNo',
+    //         gender: 'gender',
+    //         genderChoice: 'genderChoice',
+    //         age: 0,
+    //         isViewed: [],
+    //         whoLikedMe: [],
+    //         iLike: [],
+    //         intersectionLikes: [],
+    //         latitude: 0,
+    //         longitude: 0,
+    //         about: 'about',
+    //         interest: 'interest',
+    //         address: 'address',
+    //         imageUrls: [],
+    //         isSubscribed: false));
+    //   }
+    // }
+    print("LENGTH OF DRAGGABLE ITEMS IN BUILD: ${dragabbleItems.length}");
     return SafeArea(
       child: Scaffold(
-          body: isLoading
+          body: (isLoading && isUpdateLoad)
               ? const Center(
                   child: CircularProgressIndicator(
                   color: Colors.white,
@@ -83,6 +172,7 @@ class _CardsStackWidgetState extends State<CardsStackWidget> {
   }
 
   Widget getBody() {
+    print("NAME IN BUILD NOWW: ${dragabbleItems[0].name}");
     var size = MediaQuery.of(context).size;
     return Column(
       children: [
@@ -122,7 +212,7 @@ class _CardsStackWidgetState extends State<CardsStackWidget> {
                     width: size.width * 0.95,
                     child: const Center(
                       child: Text(
-                        'Looks Like we found no One around you!!!',
+                        'Looks Like we found no one around you!!!',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,
@@ -143,25 +233,21 @@ class _CardsStackWidgetState extends State<CardsStackWidget> {
             //       ),
             //     ),
             //   )
-            : Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: ValueListenableBuilder(
-                      valueListenable: swipeNotifier,
-                      builder: (context, swipe, _) => Stack(
-                        clipBehavior: Clip.none,
-                        alignment: Alignment.center,
-                        children: List.generate(dragabbleItems.length, (index) {
-                          iLike.isEmpty
-                              ? print('I LIKE LENGTH IS 0 RIGHT NOW')
-                              : print(
-                                  "I LIKED LIST OBJECT BEFORE ASSIGNING CARD STACK: ${iLike[0]}");
-                          return index >= 4 &&
-                                  !userProfileDataResult[0].isSubscribed
-                              ? const SubscriptionPage()
-                              : DragWidget(
+            : countLikes >= 4
+                ? const Center(child: SubscriptionPage())
+                : Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: ValueListenableBuilder(
+                          valueListenable: swipeNotifier,
+                          builder: (context, swipe, _) => Stack(
+                            clipBehavior: Clip.none,
+                            alignment: Alignment.center,
+                            children:
+                                List.generate(dragabbleItems.length, (index) {
+                              return DragWidget(
                                   profile: dragabbleItems[index],
                                   index: index,
                                   swipeNotifier: swipeNotifier,
@@ -169,59 +255,59 @@ class _CardsStackWidgetState extends State<CardsStackWidget> {
                                   isViewed: isViewed,
                                   whoLikedMe: whoLikedMe,
                                   intersectionOfLikes: intersectionOfLikes,
-                                );
-                        }),
+                                  length: dragabbleItems.length);
+                            }),
+                          ),
+                        ),
                       ),
-                    ),
+                      Positioned(
+                        left: 0,
+                        child: DragTarget<int>(
+                          builder: (
+                            BuildContext context,
+                            List<dynamic> accepted,
+                            List<dynamic> rejected,
+                          ) {
+                            return IgnorePointer(
+                              child: Container(
+                                height: 700.0,
+                                width: 80.0,
+                                color: Colors.transparent,
+                              ),
+                            );
+                          },
+                          onAccept: (int index) {
+                            setState(() {
+                              dragabbleItems.removeAt(index);
+                            });
+                          },
+                        ),
+                      ),
+                      Positioned(
+                        right: 0,
+                        child: DragTarget<int>(
+                          builder: (
+                            BuildContext context,
+                            List<dynamic> accepted,
+                            List<dynamic> rejected,
+                          ) {
+                            return IgnorePointer(
+                              child: Container(
+                                height: 700.0,
+                                width: 80.0,
+                                color: Colors.transparent,
+                              ),
+                            );
+                          },
+                          onAccept: (int index) {
+                            setState(() {
+                              dragabbleItems.removeAt(index);
+                            });
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                  Positioned(
-                    left: 0,
-                    child: DragTarget<int>(
-                      builder: (
-                        BuildContext context,
-                        List<dynamic> accepted,
-                        List<dynamic> rejected,
-                      ) {
-                        return IgnorePointer(
-                          child: Container(
-                            height: 700.0,
-                            width: 80.0,
-                            color: Colors.transparent,
-                          ),
-                        );
-                      },
-                      onAccept: (int index) {
-                        setState(() {
-                          dragabbleItems.removeAt(index);
-                        });
-                      },
-                    ),
-                  ),
-                  Positioned(
-                    right: 0,
-                    child: DragTarget<int>(
-                      builder: (
-                        BuildContext context,
-                        List<dynamic> accepted,
-                        List<dynamic> rejected,
-                      ) {
-                        return IgnorePointer(
-                          child: Container(
-                            height: 700.0,
-                            width: 80.0,
-                            color: Colors.transparent,
-                          ),
-                        );
-                      },
-                      onAccept: (int index) {
-                        setState(() {
-                          dragabbleItems.removeAt(index);
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              ),
       ],
     );
   }

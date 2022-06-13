@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 // import 'package:flutter_tinder_clone_app/auth/login.dart';
 // import 'package:flutter_tinder_clone_app/auth/signup.dart';
 // // import 'package:mobiflix_flutter/auth/signup.dart';
@@ -29,20 +30,24 @@ class StartScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: deviceSize.height * 0.08),
-            SizedBox(
-              height: deviceSize.height * 0.15,
-              width: deviceSize.width * 0.8,
-              child: Image.asset('assets/images/welcome_fbae2.png',
-                  color: Colors.white),
-            ),
-            // const Text(
-            //   '𝕎𝔼𝕃ℂ𝕆𝕄𝔼!',
-            //   style: TextStyle(
-            //       letterSpacing: 2,
-            //       color: Colors.white,
-            //       fontWeight: FontWeight.bold,
-            //       fontSize: 35),
+            // SizedBox(
+            //   height: deviceSize.height * 0.15,
+            //   width: deviceSize.width * 0.8,
+            //   child: Image.asset('assets/images/welcome_fbae2.png',
+            //       color: Colors.white),
             // ),
+            Text('Welcome!',
+                style: GoogleFonts.kdamThmor(
+                    letterSpacing: 2,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 35)
+                // TextStyle(
+                //     letterSpacing: 2,
+                //     color: Colors.white,
+                //     fontWeight: FontWeight.bold,
+                //     fontSize: 35),
+                ),
             SizedBox(height: deviceSize.height * 0.05),
             Container(
               margin: EdgeInsets.all(deviceSize.width * 0.06),

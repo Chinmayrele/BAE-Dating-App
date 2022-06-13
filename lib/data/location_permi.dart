@@ -1,5 +1,7 @@
 import 'package:bar_chat_dating_app/screens/home_page_screen.dart';
 import 'package:bar_chat_dating_app/screens/person_info.dart';
+import 'package:bar_chat_dating_app/shared_preferences/location_value.dart';
+import 'package:bar_chat_dating_app/shared_preferences/user_values.dart';
 import 'package:flutter/material.dart';
 // import 'package:location/location.dart';
 import 'package:geolocator/geolocator.dart';
@@ -50,11 +52,15 @@ class _LocationPermiState extends State<LocationPermi> {
     var position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     var lastPosition = await Geolocator.getLastKnownPosition();
+    await setLocationFlag(
+        latitude: position.latitude, longitude: position.longitude);
+    await setVisitingFlag(isLocDone: true);
     print(lastPosition);
     setState(() {
       locationMessage = '${position.latitude}, ${position.longitude}';
       latitude = position.latitude;
       longitude = position.longitude;
+
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (ctx) => PersonInfo(
                 isEdit: false,
@@ -65,67 +71,15 @@ class _LocationPermiState extends State<LocationPermi> {
     });
   }
 
-  // Future<void> _checkPermissions() async {
-  //   final PermissionStatus permissionGrantedResult =
-  //       await location.hasPermission();
-  //   setState(() {
-  //     _permissionGranted = permissionGrantedResult;
-  //   });
-  // }
-
-  // Future<void> _requestPermission() async {
-  //   if (_permissionGranted != PermissionStatus.granted) {
-  //     final PermissionStatus permissionRequestedResult =
-  //         await location.requestPermission();
-  //     setState(() {
-  //       _permissionGranted = permissionRequestedResult;
-  //       print(_permissionGranted);
-  //       _permissionGranted == PermissionStatus.denied
-  //           ? isloading = true
-  //           : Navigator.of(context).pushReplacement(MaterialPageRoute(
-  //               builder: (ctx) => const PersonInfo(
-  //                     isEdit: false,
-  //                   )));
-  //     });
-  //   }
-  //   // else {
-  //   //   Navigator.of(context).pushReplacement(
-  //   //       MaterialPageRoute(builder: (ctx) => HomePageScreen()));
-  //   // }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: isloading ? const Center(child: CircularProgressIndicator(color: Colors.white,)) : Container(),
-        // isloading
-        //     ? const Center(child: CircularProgressIndicator())
-        //     : Column(
-        //         children: [
-        //           const SizedBox(height: 100),
-        //           const Text(
-        //             'OOPPSS!!!',
-        //             style: TextStyle(color: Colors.white),
-        //           ),
-        //           ElevatedButton(
-        //               onPressed: () async {
-        //                 // await _requestPermission();
-        //                 // await _getLocation();
-        //                 // if (latitude == null && longitude == null) {
-        //                 //   isloading = false;
-        //                 // } else {
-        //                 //   Navigator.of(context)
-        //                 //       .pushReplacement(MaterialPageRoute(
-        //                 //           builder: (ctx) => PersonInfo(
-        //                 //                 isEdit: false,
-        //                 //                 latitude: latitude!,
-        //                 //                 longitude: longitude!,
-        //                 //               )));
-        //                 // }
-        //               },
-        //               child: const Text('Retry'))
-        //         ],
-        //       )
-        );
+      body: isloading
+          ? const Center(
+              child: CircularProgressIndicator(
+              color: Colors.white,
+            ))
+          : Container(),
+    );
   }
 }

@@ -61,7 +61,9 @@ class _ChatScreenState extends State<ChatScreen> {
         // backgroundColor: ColorConstants.kWhite,
         body: isLoading
             ? const Center(
-                child: CircularProgressIndicator(color: Colors.white,),
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                ),
               )
             : getBody(),
       ),
@@ -242,7 +244,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       SizedBox(height: size.height * 0.25),
                       const Center(
                         child: Text(
-                          'Looks Like No One Liked You!!!',
+                          'Looks like no one liked you!!!',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -369,20 +371,18 @@ class _ChatScreenState extends State<ChatScreen> {
                                         const SizedBox(
                                           height: 5,
                                         ),
-                                        SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width -
-                                              135,
-                                          child: Text(
-                                            userMessages[index]['message'],
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                color: ColorConstants.kWhite
-                                                    .withOpacity(0.8)),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        )
+                                        // SizedBox(
+                                        //   width: MediaQuery.of(context).size.width -
+                                        //       135,
+                                        //   child: Text(
+                                        //     userMessages[index]['message'],
+                                        //     style: TextStyle(
+                                        //         fontSize: 15,
+                                        //         color: ColorConstants.kWhite
+                                        //             .withOpacity(0.8)),
+                                        //     overflow: TextOverflow.ellipsis,
+                                        //   ),
+                                        // )
                                       ],
                                     )
                                   ],

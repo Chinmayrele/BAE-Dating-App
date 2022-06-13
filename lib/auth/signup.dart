@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_fonts/google_fonts.dart';
 // import 'package:flutter_tinder_clone_app/screens/home_page_screen.dart';
 
 import '../data/signup_form.dart';
@@ -83,13 +84,16 @@ class _SignUpState extends State<SignUp> {
               ),
             ),
             const SizedBox(height: 10),
-            const Text(
-              '𝓢𝓲𝓰𝓷 𝓤𝓹',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 30),
-            ),
+            Text('Sign Up',
+                style: GoogleFonts.kdamThmor(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30)
+                // TextStyle(
+                //     color: Colors.white,
+                //     fontWeight: FontWeight.bold,
+                //     fontSize: 30),
+                ),
             const SizedBox(height: 10),
             const Text(
               'Please Sign Up to Start Using our App',

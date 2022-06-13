@@ -2,6 +2,7 @@ import 'package:bar_chat_dating_app/screens/que_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 // import 'package:flutter_tinder_clone_app/screens/home_page_screen.dart';
 
 import '../data/signup_form.dart';
@@ -77,9 +78,10 @@ class _LoginState extends State<Login> {
                 ),
               ),
               const SizedBox(height: 10),
-              const Text(
-                '𝓛𝓸𝓰-𝓘𝓷',
-                style: TextStyle(
+              Text(
+                'Log In',
+                // '𝓛𝓸𝓰-𝓘𝓷',
+                style: GoogleFonts.kdamThmor(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 30),

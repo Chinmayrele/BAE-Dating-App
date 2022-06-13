@@ -14,18 +14,19 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     var size = MediaQuery.of(context).size;
     return Container(
       height: size.height * 0.75,
-      width: size.width * 0.83,
+      width: size.width * 0.87,
       decoration: BoxDecoration(
-          color: Colors.indigo,
-          borderRadius: BorderRadius.circular(15),
-          gradient: LinearGradient(
-            colors: [
-              Colors.indigo.withOpacity(0.4),
-              Colors.indigo.withOpacity(0.6)
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          )),
+        color: Colors.indigo,
+        borderRadius: BorderRadius.circular(15),
+        // gradient: LinearGradient(
+        //   colors: [
+        //     Colors.indigo.withOpacity(0.4),
+        //     Colors.indigo.withOpacity(0.6)
+        //   ],
+        //   begin: Alignment.topLeft,
+        //   end: Alignment.bottomRight,
+        // ),
+      ),
       child: Column(
         children: [
           const SizedBox(height: 15),
@@ -49,7 +50,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
           const SizedBox(height: 20),
           RichText(
             text: const TextSpan(
-                text: '\$1.27',
+                text: '\$1',
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 40,
@@ -77,8 +78,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             ),
           ),
           const SizedBox(height: 25),
-          buildRowText('Get Every Access', size),
-          buildRowText('Start a conversation with you Match', size),
+          buildRowText('Get every access to our app', size),
+          buildRowText('Start a conversation with your match', size),
           buildRowText('See who liked you', size),
           buildRowText('Find your perfect match faster with premium', size),
           const Spacer(),

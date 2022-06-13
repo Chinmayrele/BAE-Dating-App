@@ -59,7 +59,36 @@ showsheet(BuildContext ctx, Size size, QueAnsInfo queAnsDataResult,
                                 color: Colors.white, fontSize: 17),
                           ),
                         ),
-                        const SizedBox(height: 15),
+                        // const SizedBox(height: 15),
+                        // EXTRA IMAGE NUMBER 1
+                        userProfileDataResult.imageUrls.length > 1
+                            ? Container(
+                                height: size.height * 0.4,
+                                width: double.infinity,
+                                margin: const EdgeInsets.only(
+                                    left: 12, right: 12, bottom: 20, top: 20),
+                                child: Image.network(
+                                    userProfileDataResult.imageUrls[1],
+                                    fit: BoxFit.cover, loadingBuilder:
+                                        (BuildContext context, Widget child,
+                                            ImageChunkEvent? loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      value:
+                                          loadingProgress.expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes!
+                                              : null,
+                                    ),
+                                  );
+                                }),
+                              )
+                            : const SizedBox(height: 15),
                         const Text(
                           'My Basics',
                           style: TextStyle(
@@ -81,7 +110,37 @@ showsheet(BuildContext ctx, Size size, QueAnsInfo queAnsDataResult,
                             buildMyBasics(queAnsDataResult.nightStatus),
                           ],
                         ),
-                        const SizedBox(height: 15),
+                        // const SizedBox(height: 15),
+                        // EXTRA IMAGE NUMBER 2
+                        userProfileDataResult.imageUrls.length > 2
+                            ? Container(
+                                height: size.height * 0.35,
+                                width: double.infinity,
+                                margin: const EdgeInsets.only(
+                                    left: 12, right: 12, bottom: 12, top: 15),
+                                child: Image.network(
+                                    userProfileDataResult.imageUrls[2],
+                                    fit: BoxFit.cover, loadingBuilder:
+                                        (BuildContext context, Widget child,
+                                            ImageChunkEvent? loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      value:
+                                          loadingProgress.expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes!
+                                              : null,
+                                    ),
+                                  );
+                                }),
+                              )
+                            : const SizedBox(height: 15),
+
                         const Text('My Interests',
                             style: TextStyle(
                               color: Colors.white,
@@ -97,7 +156,37 @@ showsheet(BuildContext ctx, Size size, QueAnsInfo queAnsDataResult,
                           ],
                         ),
                         // IF IMAGE IS THERE
-                        const SizedBox(height: 15),
+                        // const SizedBox(height: 15),
+                        // EXTRA IMAGE NUMBER 3
+                        userProfileDataResult.imageUrls.length > 3
+                            ? Container(
+                                height: size.height * 0.35,
+                                width: double.infinity,
+                                margin: const EdgeInsets.only(
+                                    left: 12, right: 12, bottom: 12, top: 15),
+                                child: Image.network(
+                                    userProfileDataResult.imageUrls[3],
+                                    fit: BoxFit.cover, loadingBuilder:
+                                        (BuildContext context, Widget child,
+                                            ImageChunkEvent? loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      value:
+                                          loadingProgress.expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes!
+                                              : null,
+                                    ),
+                                  );
+                                }),
+                              )
+                            : const SizedBox(height: 15),
+
                         Row(
                           children: [
                             Text(

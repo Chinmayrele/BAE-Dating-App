@@ -4,6 +4,8 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   geolocator_windows
+  permission_handler_windows
+  zego_express_engine
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

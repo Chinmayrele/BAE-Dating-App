@@ -16,6 +16,7 @@ class PhoneLogin extends StatefulWidget {
 
 class _PhoneLoginState extends State<PhoneLogin> {
   final myNumberController = TextEditingController();
+  String myPhoneNumber = '';
   var isLoading = false;
   String verifyId = '';
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -158,6 +159,7 @@ class _PhoneLoginState extends State<PhoneLogin> {
                   ),
                   onChanged: (phone) {
                     print(phone.completeNumber);
+                    myPhoneNumber = phone.completeNumber;
                   },
                   onCountryChanged: (country) {
                     print('Country changed to: ' + country.name);
@@ -229,7 +231,7 @@ class _PhoneLoginState extends State<PhoneLogin> {
                     });
 
                     await auth.verifyPhoneNumber(
-                      phoneNumber: '+91' + myNumberController.text,
+                      phoneNumber: myPhoneNumber,
                       verificationCompleted: (v) {
                         debugPrint("TOKEN: ${v.token}");
                         debugPrint("Verfication ID: ${v.verificationId}");
