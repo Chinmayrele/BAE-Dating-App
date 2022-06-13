@@ -73,35 +73,32 @@ class _CardsStackWidgetState extends State<CardsStackWidget> {
       )
           .then((_) {
         print('FETCH USER DATA ENTER THEN VALUE');
-        if (result.usersData.isNotEmpty) {
-          print('LATITUDE: ${result.usersData[0].latitude}');
-          print('LONGITUDE: ${result.usersData[0].longitude}');
-        }
         dragabbleItems = result.usersData;
-        // if (dragabbleItems[dragabbleItems.length - 1].userId !=
-        //     'zzzzzzzzzzzzzzzzzzzz') {
-        //   dragabbleItems.insert(
-        //       dragabbleItems.length,
-        //       UserInfos(
-        //           userId: 'zzzzzzzzzzzzzzzzzzzz',
-        //           name: 'name',
-        //           email: 'email',
-        //           phoneNo: 'phoneNo',
-        //           gender: 'gender',
-        //           genderChoice: 'genderChoice',
-        //           age: 0,
-        //           isViewed: [],
-        //           whoLikedMe: [],
-        //           iLike: [],
-        //           intersectionLikes: [],
-        //           latitude: 0,
-        //           longitude: 0,
-        //           about: 'about',
-        //           interest: 'interest',
-        //           address: 'address',
-        //           imageUrls: [],
-        //           isSubscribed: false));
-        // }
+
+        if (dragabbleItems.isNotEmpty && dragabbleItems[0].userId !=
+            'zzzzzzzzzzzzzzzzzzzz') {
+          dragabbleItems.insert(
+              0,
+              UserInfos(
+                  userId: 'zzzzzzzzzzzzzzzzzzzz',
+                  name: '',
+                  email: 'email',
+                  phoneNo: 'phoneNo',
+                  gender: 'gender',
+                  genderChoice: 'genderChoice',
+                  age: 0,
+                  isViewed: [],
+                  whoLikedMe: [],
+                  iLike: [],
+                  intersectionLikes: [],
+                  latitude: 0,
+                  longitude: 0,
+                  about: 'about',
+                  interest: 'interest',
+                  address: 'address',
+                  imageUrls: [],
+                  isSubscribed: false));
+        }
         itemLength = result.usersData.length;
         print("ITEM LENGTH: $itemLength");
         setState(() {

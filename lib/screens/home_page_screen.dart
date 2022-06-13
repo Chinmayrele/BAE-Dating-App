@@ -29,7 +29,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: screens[pageIndex],
+      body: IndexedStack(children: screens, index: pageIndex),
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(
             backgroundColor: Colors.white12,

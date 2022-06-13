@@ -10,13 +10,11 @@ class InfoProviders with ChangeNotifier {
   final List<UserInfos> _usersData = [];
   // late UserInfos _userData;
   final List<QueAnsInfo> _queAnsInfo = [];
-  int _curIndex = 0;
 
   List<UserInfos> get userInfo => [..._userInfo];
   List<UserInfos> get usersData => [..._usersData];
   // UserInfos get userData => _userData;
   List<QueAnsInfo> get queAnsInfo => [..._queAnsInfo];
-  int get curIndex => _curIndex;
 
   Future<void> addUserProfileInfo(UserInfos info) async {
     await FirebaseFirestore.instance
@@ -128,13 +126,24 @@ class InfoProviders with ChangeNotifier {
           isSubscribed: e[i]['isSubscribed']);
       final distance =
           Geolocator.distanceBetween(lati, longi, us.latitude, us.longitude);
-
+      int flag = 1;
       //  IF GENDER && YOURSELF REMOVE CONDITION   && !_userInfo[0].isViewed.contains(us.userId)
       if (us.gender.toLowerCase() == genderPreference.toLowerCase() &&
           us.userId != FirebaseAuth.instance.currentUser!.uid &&
           distance < 100000 &&
           !_userInfo[0].isViewed.contains(us.userId)) {
-        _usersData.add(us);
+        // if (_usersData.isEmpty) {
+        //   _usersData.add(us);
+        // }
+        // for (int j = 0; j < _usersData.length; j++) {
+        //   if (_usersData[j].userId == us.userId) {
+        //     // _usersData.add(us);
+        //     flag = 0;
+        //   }
+        // }
+        // if (flag == 1) {
+          _usersData.add(us);
+        // }
       }
     }
     notifyListeners();
@@ -198,10 +207,5 @@ class InfoProviders with ChangeNotifier {
     _userInfo.add(userInf);
     print("FETCH PROFILE USER DATA PROVIDER NAME: ${_userInfo[0].name}");
     notifyListeners();
-  }
-
-  changeIndex(int ind) {
-    _curIndex = ind;
-    // notifyListeners();
   }
 }

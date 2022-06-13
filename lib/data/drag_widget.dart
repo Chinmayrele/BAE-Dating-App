@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../global/simple_container.dart';
 import '../providers/info_provider.dart';
 
 enum Swipe { left, right, none }
@@ -46,7 +47,7 @@ class _DragWidgetState extends State<DragWidget> {
   bool isLoadingQueAns = true;
   @override
   void initState() {
-    // if (widget.length - 1 != widget.index) {
+    if (widget.index != 0) {
       result = Provider.of<InfoProviders>(context, listen: false);
       result.fetchQueAnsData(widget.profile.userId).then((value) {
         queAnsDataResult = value;
@@ -54,12 +55,12 @@ class _DragWidgetState extends State<DragWidget> {
           isLoadingQueAns = false;
         });
       });
-    // }
-    // if (widget.length - 1 == widget.index) {
-    //   setState(() {
-    //     isLoadingQueAns = false;
-    //   });
-    // }
+    }
+    if (widget.index == 0) {
+      setState(() {
+        isLoadingQueAns = false;
+      });
+    }
     super.initState();
   }
 
@@ -69,14 +70,17 @@ class _DragWidgetState extends State<DragWidget> {
     // final result = Provider.of<InfoProviders>(context,listen: false);
     // result.changeIndex(widget.index);
     print('BUILD ENTERED IN DRAG WIDGET:>>>>>>>');
-    return isLoadingQueAns
-        ? const Center(
-            child: CircularProgressIndicator(
-              color: Colors.white,
-            ),
-          )
-        // : widget.index == widget.length - 1
-        //     ? SimpleContainer()
+    return
+        // widget.index == widget.length - 1
+        //         ? const SimpleContainer() :
+        isLoadingQueAns
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                ),
+              )
+            // : widget.index == widget.length - 1
+            //     ? SimpleContainer()
             : Center(
                 child: Draggable<int>(
                   // Data is the value this Draggable stores.
@@ -94,35 +98,49 @@ class _DragWidgetState extends State<DragWidget> {
                               : const AlwaysStoppedAnimation(0),
                           child: Stack(
                             children: [
+                              // widget.index == widget.length-1 ? QueAnsInfo(relationStatus: 'relationStatus', vacationStatus: 'vacationStatus', nightStatus: 'nightStatus', smokeStatus: 'smokeStatus', drinkStatus: 'drinkStatus', exerciseStatus: 'exerciseStatus', heightStatus: 'heightStatus') :
                               ProfileCard(
-                                queAnsDataResult: queAnsDataResult,
+                                queAnsDataResult:
+                                    widget.index == 0
+                                        ? QueAnsInfo(
+                                            relationStatus: 'relationStatus',
+                                            vacationStatus: 'vacationStatus',
+                                            nightStatus: 'nightStatus',
+                                            smokeStatus: 'smokeStatus',
+                                            drinkStatus: 'drinkStatus',
+                                            exerciseStatus: 'exerciseStatus',
+                                            heightStatus: 'heightStatus')
+                                        : queAnsDataResult,
                                 profile: widget.profile,
+                                index: widget.index,
                               ),
-                              swipe != Swipe.none
-                                  ? swipe == Swipe.right
-                                      ? Positioned(
-                                          top: 40,
-                                          left: 20,
-                                          child: Transform.rotate(
-                                            angle: 12,
-                                            child: TagWidget(
-                                              text: 'LIKE',
-                                              color: Colors.green[400]!,
-                                            ),
-                                          ),
-                                        )
-                                      : Positioned(
-                                          top: 50,
-                                          right: 24,
-                                          child: Transform.rotate(
-                                            angle: -12,
-                                            child: TagWidget(
-                                              text: 'DISLIKE',
-                                              color: Colors.red[400]!,
-                                            ),
-                                          ),
-                                        )
-                                  : const SizedBox.shrink(),
+                              widget.index != 0
+                                  ? swipe != Swipe.none
+                                      ? swipe == Swipe.right
+                                          ? Positioned(
+                                              top: 40,
+                                              left: 20,
+                                              child: Transform.rotate(
+                                                angle: 12,
+                                                child: TagWidget(
+                                                  text: 'LIKE',
+                                                  color: Colors.green[400]!,
+                                                ),
+                                              ),
+                                            )
+                                          : Positioned(
+                                              top: 50,
+                                              right: 24,
+                                              child: Transform.rotate(
+                                                angle: -12,
+                                                child: TagWidget(
+                                                  text: 'DISLIKE',
+                                                  color: Colors.red[400]!,
+                                                ),
+                                              ),
+                                            )
+                                      : const SizedBox.shrink()
+                                  : SizedBox(),
                             ],
                           ),
                         );
@@ -191,8 +209,17 @@ class _DragWidgetState extends State<DragWidget> {
                   ),
 
                   child: ProfileCard(
-                      queAnsDataResult: queAnsDataResult,
-                      profile: widget.profile),
+                      queAnsDataResult: widget.index == 0
+                          ? QueAnsInfo(
+                              relationStatus: 'relationStatus',
+                              vacationStatus: 'vacationStatus',
+                              nightStatus: 'nightStatus',
+                              smokeStatus: 'smokeStatus',
+                              drinkStatus: 'drinkStatus',
+                              exerciseStatus: 'exerciseStatus',
+                              heightStatus: 'heightStatus')
+                          : queAnsDataResult,
+                      profile: widget.profile,index: widget.index,),
                 ),
               );
   }
