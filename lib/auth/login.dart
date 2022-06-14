@@ -51,7 +51,7 @@ class _LoginState extends State<Login> {
     } catch (err) {
       ScaffoldMessenger.of(ctx).showSnackBar(
         SnackBar(
-          content: const Text('User not found! Please Sign in First'),
+          content: const Text('User not found! Please sign in first'),
           backgroundColor: Theme.of(ctx).errorColor,
         ),
       );
@@ -88,7 +88,7 @@ class _LoginState extends State<Login> {
               ),
               const SizedBox(height: 10),
               const Text(
-                'Please Login to Continue Using our App',
+                'Please login to continue using our app',
                 style: TextStyle(color: Colors.white),
               ),
               const SizedBox(height: 12),

@@ -88,7 +88,7 @@ class _PhoneLoginState extends State<PhoneLogin> {
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.7,
                   child: const Text(
-                    'Please enter your phone number and We will send you a SMS verification code',
+                    'Please enter your phone number and we will send you a SMS verification code',
                     style: TextStyle(color: Colors.white, fontSize: 18),
                     textAlign: TextAlign.center,
                   ),

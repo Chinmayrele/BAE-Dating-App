@@ -19,6 +19,14 @@ class _PaymentIntegrateState extends State<PaymentIntegrate> {
   late InfoProviders result;
   late UserInfos userProfiledata;
   bool isLoading = true;
+  snackBar(String message) {
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -46,11 +54,12 @@ class _PaymentIntegrateState extends State<PaymentIntegrate> {
       "isSubscribed": true,
     });
     //debugPrint(
-        //"RESPONSE ORDERID: ${response.orderId}\nPAYMENT ID ${response.paymentId}\nSIGNATURE ${response.signature}");
+    //"RESPONSE ORDERID: ${response.orderId}\nPAYMENT ID ${response.paymentId}\nSIGNATURE ${response.signature}");
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
     // Do something when payment fails
+    snackBar(response.message.toString());
     //debugPrint("CODE: ${response.code}\nMESSAGE ${response.message}");
   }
 
@@ -221,10 +230,10 @@ class _PaymentIntegrateState extends State<PaymentIntegrate> {
       'amount': '$amountToPay',
       'name': 'GAUTHAM RAJ',
       'description': 'Premium Member for App',
-      'prefill': {
-        'contact': 7338714037,
-        'email': 'rajmr1290@gmail.com'
-      }
+      'prefill': {'contact': '7338714037', 'email': 'gauraj390@gmail.com'},
+      // "external": {
+      //   "wallets": ["paytm"]
+      // },
     };
     try {
       _razorpay.open(options);

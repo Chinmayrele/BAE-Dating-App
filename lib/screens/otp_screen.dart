@@ -88,7 +88,7 @@ class _OtpRequestState extends State<OtpRequest> {
             const SizedBox(height: 50),
             const Center(
               child: Text(
-                'Code has been Sent to Mobile no.',
+                'Code has been sent to mobile no.',
                 style: TextStyle(color: Colors.white, fontSize: 13),
               ),
             ),

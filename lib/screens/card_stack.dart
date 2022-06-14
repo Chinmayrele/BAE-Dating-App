@@ -211,7 +211,7 @@ class _CardsStackWidgetState extends State<CardsStackWidget> {
                     width: size.width * 0.95,
                     child: const Center(
                       child: Text(
-                        'Looks Like we found no one around you!!!',
+                        'Looks like we found no one around you!!!',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,

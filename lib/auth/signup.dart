@@ -57,7 +57,7 @@ class _SignUpState extends State<SignUp> {
       });
     } catch (err) {
       ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-        content: const Text('Email Already Exists. Log-In Yourself!'),
+        content: const Text('Email already exists. Log-In yourself!'),
         backgroundColor: Theme.of(ctx).errorColor,
       ));
       setState(() {
@@ -96,7 +96,7 @@ class _SignUpState extends State<SignUp> {
                 ),
             const SizedBox(height: 10),
             const Text(
-              'Please Sign Up to Start Using our App',
+              'Please sign up to start using our app',
               style: TextStyle(color: Colors.white),
             ),
             SizedBox(
