@@ -1,14 +1,10 @@
-import 'package:bar_chat_dating_app/models/que_ans_info.dart';
+import 'package:bar_chat_dating_app/data/verify_email.dart';
 import 'package:bar_chat_dating_app/screens/que_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
-// import 'package:flutter_tinder_clone_app/screens/home_page_screen.dart';
-
 import '../data/signup_form.dart';
-import '../screens/home_page_screen.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -39,8 +35,11 @@ class _SignUpState extends State<SignUp> {
         // });
         if (authResult.user != null) {
           Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (ctx) => const QueScreen()));
+              MaterialPageRoute(builder: (ctx) => const VerifyEmailPage()));
         }
+        setState(() {
+          _isLoading = false;
+        });
       }
     } on PlatformException catch (err) {
       var message = 'ERROR!!! Please Check Your Credentials';
@@ -89,10 +88,6 @@ class _SignUpState extends State<SignUp> {
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 30)
-                // TextStyle(
-                //     color: Colors.white,
-                //     fontWeight: FontWeight.bold,
-                //     fontSize: 30),
                 ),
             const SizedBox(height: 10),
             const Text(

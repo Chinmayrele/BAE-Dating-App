@@ -1,3 +1,4 @@
+import 'package:bar_chat_dating_app/auth/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -20,27 +21,15 @@ class StartScreen extends StatelessWidget {
               width: double.infinity,
               child: Image.asset(
                 'assets/images/bae_flogo.png',
-                // fit: BoxFit.cover,
               ),
             ),
             SizedBox(height: deviceSize.height * 0.08),
-            // SizedBox(
-            //   height: deviceSize.height * 0.15,
-            //   width: deviceSize.width * 0.8,
-            //   child: Image.asset('assets/images/welcome_fbae2.png',
-            //       color: Colors.white),
-            // ),
             Text('Welcome!',
                 style: GoogleFonts.kdamThmor(
                     letterSpacing: 2,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 35)
-                // TextStyle(
-                //     letterSpacing: 2,
-                //     color: Colors.white,
-                //     fontWeight: FontWeight.bold,
-                //     fontSize: 35),
                 ),
             SizedBox(height: deviceSize.height * 0.05),
             Container(
@@ -48,8 +37,10 @@ class StartScreen extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
+                  //PHONE NUMBER LOGIN COMMENTED
+                  //FOR PHONE LOGIN TYPE PHONELOGIN()
                   Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (ctx) => const PhoneLogin()));
+                      MaterialPageRoute(builder: (ctx) => const SignUp()));
                 },
                 child: const Text(
                   'Get Started',

@@ -1,9 +1,7 @@
 import 'package:bar_chat_dating_app/auth/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-// import 'package:flutter_tinder_clone_app/screens/otp_screen.dart';
 
 import './otp_screen.dart';
 

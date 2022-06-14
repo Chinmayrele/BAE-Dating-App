@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bar_chat_dating_app/models/user_info.dart';
 import 'package:bar_chat_dating_app/providers/info_provider.dart';
 import 'package:bar_chat_dating_app/screens/person_info.dart';
+import 'package:bar_chat_dating_app/screens/splash_screen.dart';
 import 'package:bar_chat_dating_app/screens/start_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -263,7 +264,8 @@ class _AccountScreenState extends State<AccountScreen> {
                                 FirebaseAuth.instance.signOut();
                                 Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
-                                        builder: (ctx) => const StartScreen()));
+                                        builder: (ctx) =>
+                                            const SplashScreen()));
                               },
                               child: Container(
                                 width: 60,

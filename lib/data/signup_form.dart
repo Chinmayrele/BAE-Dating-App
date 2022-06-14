@@ -1,15 +1,8 @@
-import 'package:bar_chat_dating_app/screens/phone_login.dart';
-import 'package:bar_chat_dating_app/screens/que_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:flutter_tinder_clone_app/screens/home_page_screen.dart';
-// import 'package:flutter_tinder_clone_app/screens/login_number.dart';
 
 import '../auth/login.dart';
 import '../auth/signup.dart';
-import '../screens/home_page_screen.dart';
-// import 'package:mobiflix_flutter/auth/login.dart';
-// import 'package:mobiflix_flutter/auth/signup.dart';
 
 class SignUpForm extends StatefulWidget {
   final bool isLogin;
@@ -103,7 +96,7 @@ class _SignUpFormState extends State<SignUpForm> {
                           // gapPadding: 8,
                           borderRadius: BorderRadius.circular(20),
                         )),
-                    textInputAction: TextInputAction.next,
+                    textInputAction: TextInputAction.done,
                     validator: (value) {
                       if (value!.isEmpty || value.length < 6) {
                         return 'Enter Username with Min Length 7';
@@ -159,7 +152,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
                   )),
-              textInputAction: TextInputAction.next,
+              textInputAction: TextInputAction.done,
               validator: (val) {
                 if (val!.isEmpty) {
                   return 'Please Enter Email Address';
@@ -250,8 +243,6 @@ class _SignUpFormState extends State<SignUpForm> {
             child: ElevatedButton(
               onPressed: () {
                 _trySubmit(context);
-                // Navigator.of(context).pushReplacement(MaterialPageRoute(
-                //     builder: (ctx) => const QueScreen()));
               },
               child: widget.isLoading
                   ? const CircularProgressIndicator(
@@ -272,6 +263,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   primary: Colors.pink),
             ),
           ),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -296,41 +288,43 @@ class _SignUpFormState extends State<SignUpForm> {
                   ))
             ],
           ),
-          const Divider(
-            color: Colors.white,
-            indent: 30,
-            endIndent: 30,
-            thickness: 0.5,
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Or Login with',
-            style: TextStyle(color: Colors.white, fontSize: 12),
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            // width: deviceSize.width * 0.5,
-            width: 180,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (ctx) => const PhoneLogin()));
-              },
-              child: const Text('Phone Number',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 17,
-                  )),
-              style: ElevatedButton.styleFrom(
-                elevation: 20,
-                primary: Colors.pinkAccent,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
-              ),
-            ),
-          )
+          //PHONE NUMBER LOGIN COMMENTED
+
+          // const Divider(
+          //   color: Colors.white,
+          //   indent: 30,
+          //   endIndent: 30,
+          //   thickness: 0.5,
+          // ),
+          // const SizedBox(height: ),
+          // const Text(
+          //   'Or Login with',
+          //   style: TextStyle(color: Colors.white, fontSize: 12),
+          // ),
+          // const SizedBox(height: 8),
+          // SizedBox(
+          //   // width: deviceSize.width * 0.5,
+          //   width: 180,
+          //   height: 50,
+          //   child: ElevatedButton(
+          //     onPressed: () {
+          //       Navigator.pushReplacement(context,
+          //           MaterialPageRoute(builder: (ctx) => const PhoneLogin()));
+          //     },
+          //     child: const Text('Phone Number',
+          //         style: TextStyle(
+          //           color: Colors.white,
+          //           fontWeight: FontWeight.bold,
+          //           fontSize: 17,
+          //         )),
+          //     style: ElevatedButton.styleFrom(
+          //       elevation: 20,
+          //       primary: Colors.pinkAccent,
+          //       shape: RoundedRectangleBorder(
+          //           borderRadius: BorderRadius.circular(20)),
+          //     ),
+          //   ),
+          // )
         ],
       ),
     );

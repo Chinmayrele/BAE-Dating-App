@@ -1,12 +1,16 @@
+import 'dart:convert';
+
 import 'package:bar_chat_dating_app/screens/que_screen.dart';
+import 'package:bar_chat_dating_app/shared_preferences/user_values.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-// import 'package:flutter_tinder_clone_app/screens/home_page_screen.dart';
 
+import '../data/location_permi.dart';
 import '../data/signup_form.dart';
 import '../screens/home_page_screen.dart';
+import '../screens/person_info.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -28,12 +32,31 @@ class _LoginState extends State<Login> {
         _isLoading = true;
       });
       if (isLogin) {
-        authResult = await FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: email, password: password);
-        //debugPrint(authResult.toString());
+        authResult = await FirebaseAuth.instance.signInWithEmailAndPassword(
+            email: email.trim(), password: password);
         if (authResult.user != null) {
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (ctx) => const QueScreen()));
+          final String isVisited = await getVisitingFlag();
+          if (isVisited.isNotEmpty) {
+            Map<String, dynamic> mp = json.decode(isVisited);
+            if (mp.containsKey('isProfileDone') && mp['isProfileDone']) {
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (ctx) => const HomePageScreen()));
+            } else if (mp.containsKey('isLocDone') && mp['isLocDone']) {
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (ctx) => PersonInfo(
+                        isEdit: false,
+                      )));
+            } else if (mp.containsKey('isQueAnsDone') && mp['isQueAnsDone']) {
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (ctx) => const LocationPermi()));
+            } else {
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (ctx) => const QueScreen()));
+            }
+          } else {
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (ctx) => const QueScreen()));
+          }
         }
       }
     } on PlatformException catch (err) {
