@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'package:agora_rtc_engine/rtc_engine.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
 // import 'package:agora_rtc_engine/rtc_remote_view.dart' as RtcRemoteView;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../CallScreens/pickup/circle_painter.dart';
+import '../CallScreens/pickup/curve_wave.dart';
 import '../data/constants.dart';
 import '../models/call.dart';
 import '../models/log.dart';
@@ -28,6 +31,8 @@ class _AudioScreenState extends State<AudioScreen> {
 
   late SharedPreferences preferences;
   late StreamSubscription callStreamSubscription;
+  late AnimationController _controller;
+  Color rippleColor = Colors.red;
 
   final _users = <int>[];
   String APP_ID = "94ecdf171b054f03997a56d21ce2f0f8";
@@ -40,11 +45,13 @@ class _AudioScreenState extends State<AudioScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    // _controller = AnimationController(vsync: this);
     addPostFrameCallback();
     initializeAgora();
   }
 
   Future<void> initializeAgora() async {
+    _engine = await RtcEngine.createWithContext(RtcEngineContext(APP_ID));
     if (APP_ID.isEmpty) {
       setState(() {
         _infoStrings.add(
@@ -56,6 +63,7 @@ class _AudioScreenState extends State<AudioScreen> {
     }
 
     await _initAgoraRtcEngine();
+    // _controller =
 
     _engine.setEventHandler(RtcEngineEventHandler(
       error: (dynamic code) {
@@ -137,17 +145,17 @@ class _AudioScreenState extends State<AudioScreen> {
         });
       },
 
-      // firstRemoteVideoFrame: (
-      //   int uid,
-      //   int width,
-      //   int height,
-      //   int elapsed,
-      // ) {
-      //   setState(() {
-      //     final info = 'firstRemoteVideo: $uid ${width}x $height';
-      //     _infoStrings.add(info);
-      //   });
-      // },
+      firstRemoteVideoFrame: (
+        int uid,
+        int width,
+        int height,
+        int elapsed,
+      ) {
+        setState(() {
+          final info = 'firstRemoteVideo: $uid ${width}x $height';
+          _infoStrings.add(info);
+        });
+      },
     ));
 
     // await _engine.setParameters(
@@ -159,6 +167,8 @@ class _AudioScreenState extends State<AudioScreen> {
   Future<void> _initAgoraRtcEngine() async {
     await RtcEngine.create(APP_ID);
     await _engine.enableAudio();
+    _engine.setChannelProfile(ChannelProfile.LiveBroadcasting);
+    _engine.setClientRole(ClientRole.Broadcaster);
   }
 
   addPostFrameCallback() async {
@@ -173,11 +183,12 @@ class _AudioScreenState extends State<AudioScreen> {
   }
 
   /// Helper function to get list of native views
-  List _getRenderViews() {
-    final List list = [];
-    _users.forEach((int uid) => list.add(uid));
-    return list;
-  }
+  // List _getRenderViews() {
+  //   final List list = [
+  //   ];
+  //   _users.forEach((int uid) => list.add(uid));
+  //   return list;
+  // }
 
   /// Video view wrapper
   // Widget _videoView(view) {
@@ -199,16 +210,18 @@ class _AudioScreenState extends State<AudioScreen> {
   //   final views = _getRenderViews();
   //   switch (views.length) {
   //     case 1:
-  //       return Column(
-  //         children: <Widget>[_videoView(views[0])],
-  //       );
+  //       return Container(
+  //           child: Column(
+  //             children: <Widget>[_videoView(views[0])],
+  //           ));
   //     case 2:
-  //       return Column(
-  //         children: <Widget>[
-  //       _expandedVideoRow([views[0]]),
-  //       _expandedVideoRow([views[1]])
-  //         ],
-  //       );
+  //       return Container(
+  //           child: Column(
+  //             children: <Widget>[
+  //               _expandedVideoRow([views[0]]),
+  //               _expandedVideoRow([views[1]])
+  //             ],
+  //           ));
   //     default:
   //   }
   //   return Container();
@@ -275,18 +288,18 @@ class _AudioScreenState extends State<AudioScreen> {
             fillColor: Colors.redAccent,
             padding: const EdgeInsets.all(15.0),
           ),
-          RawMaterialButton(
-            onPressed: _onSwitchCamera,
-            child: const Icon(
-              Icons.switch_camera,
-              color: Colors.blueAccent,
-              size: 20.0,
-            ),
-            shape: const CircleBorder(),
-            elevation: 2.0,
-            fillColor: Colors.white,
-            padding: const EdgeInsets.all(12.0),
-          )
+          // RawMaterialButton(
+          //   onPressed: _onSwitchCamera,
+          //   child: Icon(
+          //     Icons.switch_camera,
+          //     color: Colors.blueAccent,
+          //     size: 20.0,
+          //   ),
+          //   shape: CircleBorder(),
+          //   elevation: 2.0,
+          //   fillColor: Colors.white,
+          //   padding: const EdgeInsets.all(12.0),
+          // )
         ],
       ),
     );
@@ -328,7 +341,7 @@ class _AudioScreenState extends State<AudioScreen> {
                         ),
                         child: Text(
                           _infoStrings[index],
-                          style: TextStyle(color: Colors.blueGrey),
+                          style: const TextStyle(color: Colors.blueGrey),
                         ),
                       ),
                     )
@@ -349,10 +362,6 @@ class _AudioScreenState extends State<AudioScreen> {
     _engine.muteLocalAudioStream(muted);
   }
 
-  void _onSwitchCamera() {
-    _engine.switchCamera();
-  }
-
   @override
   void dispose() {
     // clear users
@@ -364,6 +373,59 @@ class _AudioScreenState extends State<AudioScreen> {
     super.dispose();
   }
 
+  Widget _button() {
+    return Center(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(100.0),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: RadialGradient(
+              colors: <Color>[rippleColor, Colors.black12],
+            ),
+          ),
+          child: ScaleTransition(
+            scale: Tween(begin: 0.95, end: 1.0).animate(
+              CurvedAnimation(
+                parent: _controller,
+                curve: const CurveWave(),
+              ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(100.0),
+              child: CachedNetworkImage(
+                placeholder: (context, url) => Container(
+                  child: const CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation(kPrimaryColor),
+                  ),
+                  width: 180.0,
+                  height: 180.0,
+                  padding: const EdgeInsets.all(70.0),
+                  decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(8.0)),
+                ),
+                errorWidget: (context, url, error) => Material(
+                  child: Image.asset(
+                    "images/img_not_available.jpeg",
+                    width: 180.0,
+                    height: 180.0,
+                    fit: BoxFit.cover,
+                  ),
+                  borderRadius: BorderRadius.circular(8.0),
+                  clipBehavior: Clip.hardEdge,
+                ),
+                imageUrl: widget.call.callerPic.toString(),
+                width: 180.0,
+                height: 180.0,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -371,7 +433,48 @@ class _AudioScreenState extends State<AudioScreen> {
       body: Center(
         child: Stack(
           children: <Widget>[
-            // _viewRows(),
+            Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(vertical: 100),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CustomPaint(
+                    painter: CirclePainter(
+                      _controller,
+                      color: rippleColor,
+                    ),
+                    child: SizedBox(
+                      width: 320.0,
+                      height: 180.0,
+                      child: _button(),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 50,
+                  ),
+                  const Text(
+                    "Incoming...",
+                    style: TextStyle(
+                        fontSize: 30.0,
+                        color: Colors.white,
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w300),
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  Text(
+                    widget.call.callerName.toString(),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 25,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             // _panel(),
             _toolbar(),
           ],

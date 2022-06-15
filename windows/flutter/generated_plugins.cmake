@@ -6,7 +6,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
   agora_rtc_engine
   geolocator_windows
   permission_handler_windows
-  zego_express_engine
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

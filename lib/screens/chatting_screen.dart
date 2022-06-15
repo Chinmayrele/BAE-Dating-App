@@ -31,7 +31,8 @@ class _ChattingScreenState extends State<ChattingScreen> {
             ],
           ),
         ),
-      ), uid: widget.userdata.userId,
+      ), 
+      uid: widget.userdata.userId,
     );
   }
 }

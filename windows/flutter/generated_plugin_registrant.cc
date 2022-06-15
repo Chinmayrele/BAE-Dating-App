@@ -9,7 +9,6 @@
 #include <agora_rtc_engine/agora_rtc_engine_plugin.h>
 #include <geolocator_windows/geolocator_windows.h>
 #include <permission_handler_windows/permission_handler_windows_plugin.h>
-#include <zego_express_engine/zego_express_engine_plugin.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
   AgoraRtcEnginePluginRegisterWithRegistrar(
@@ -18,6 +17,4 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("GeolocatorWindows"));
   PermissionHandlerWindowsPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("PermissionHandlerWindowsPlugin"));
-  ZegoExpressEnginePluginRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("ZegoExpressEnginePlugin"));
 }

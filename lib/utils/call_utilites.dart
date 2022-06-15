@@ -16,10 +16,10 @@ class CallUtils {
   static final CallMethods callMethods = CallMethods();
 
   static dial(
-      {required String currUserAvatar,
+      {required dynamic currUserAvatar,
       required String currUserName,
       required String currUserId,
-      required String receiverAvatar,
+      required dynamic receiverAvatar,
       required String receiverName,
       required String receiverId,
       context}) async {
@@ -62,13 +62,15 @@ class CallUtils {
         "timestamp": log.timestamp
       });
 
-      final result = Provider.of<InfoProviders>(context);
+      final result = Provider.of<InfoProviders>(context, listen: false);
       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => result.call_type ? CallScreen(
-              call: call,
-            ) :  AudioScreen(call: call),
+            builder: (context) => result.call_type
+                ? CallScreen(
+                    call: call,
+                  )
+                : AudioScreen(call: call),
           ));
     }
   }

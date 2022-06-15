@@ -251,8 +251,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                     ],
                   )
-                : !isSubscribed
-                    ? const SubscriptionPage()
+                // : !isSubscribed
+                //     ? const SubscriptionPage()
                     : Padding(
                         padding: const EdgeInsets.only(left: 15),
                         child: Column(

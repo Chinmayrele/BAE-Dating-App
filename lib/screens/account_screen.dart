@@ -265,7 +265,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                 Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
                                         builder: (ctx) =>
-                                            const SplashScreen()));
+                                            const StartScreen()));
                               },
                               child: Container(
                                 width: 60,
