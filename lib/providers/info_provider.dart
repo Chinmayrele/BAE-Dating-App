@@ -10,6 +10,7 @@ class InfoProviders with ChangeNotifier {
   final List<UserInfos> _usersData = [];
   // late UserInfos _userData;
   final List<QueAnsInfo> _queAnsInfo = [];
+  bool call_type = false;
 
   List<UserInfos> get userInfo => [..._userInfo];
   List<UserInfos> get usersData => [..._usersData];
@@ -162,16 +163,10 @@ class InfoProviders with ChangeNotifier {
       nightStatus: e['nightStatus'],
       heightStatus: e['heightStatus'],
     );
-    //debugPrint(data.data().toString());
     return userInf;
-    // _queAnsInfo.add(userInf);
-    // //debugPrint(
-    //     "QUE ANS FETCH METHOD PROVIDER VACATION STATUS: ${_queAnsInfo[0].vacationStatus}");
-    // notifyListeners();
   }
 
   Future<void> fetchUSerProfileData() async {
-    //debugPrint('12342353464565786786756545756585857857');
     final data = await FirebaseFirestore.instance
         .collection('profile')
         .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -197,10 +192,13 @@ class InfoProviders with ChangeNotifier {
       imageUrls: e['imageUrls'],
       isSubscribed: e['isSubscribed'],
     );
-    //debugPrint(data.data().toString());
-    //debugPrint('///////////////////');
     _userInfo.add(userInf);
     //debugPrint("FETCH PROFILE USER DATA PROVIDER NAME: ${_userInfo[0].name}");
     notifyListeners();
+  }
+
+  bool checkAudioVideo(bool value) {
+    call_type = value;
+    return call_type;
   }
 }

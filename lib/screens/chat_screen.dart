@@ -1,3 +1,4 @@
+import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:bar_chat_dating_app/models/user_info.dart';
 import 'package:bar_chat_dating_app/providers/info_provider.dart';
 import 'package:bar_chat_dating_app/screens/chatting_screen.dart';
@@ -7,12 +8,6 @@ import 'package:provider/provider.dart';
 
 import '../common/color_constants.dart';
 import '../data/chats_json.dart';
-
-/*
-Title:ChatScreen
-Purpose:ChatScreen
-Created By:Chinmay Rele
-*/
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -24,6 +19,7 @@ class _ChatScreenState extends State<ChatScreen> {
   late InfoProviders result;
   late bool isSubscribed;
   late List<dynamic> intersectionUid;
+  late UserInfos userdata;
   List<UserInfos> intersectionUserLikes = [];
   bool isLoading = true;
   // int indexR = 0;
@@ -33,6 +29,7 @@ class _ChatScreenState extends State<ChatScreen> {
     result = Provider.of<InfoProviders>(context, listen: false);
     result.fetchUSerProfileData().then((value) {
       intersectionUid = result.userInfo[0].intersectionLikes;
+      userdata = result.userInfo[0];
       isSubscribed = result.userInfo[0].isSubscribed;
       if (intersectionUid.isEmpty) {
         setState(() {
@@ -268,6 +265,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     builder: (ctx) => ChattingScreen(
                                           chaterUser:
                                               intersectionUserLikes[index],
+                                          userdata: userdata,
                                         )));
                               },
                               child: Container(

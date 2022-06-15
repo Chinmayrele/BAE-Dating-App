@@ -1,6 +1,7 @@
 import 'package:bar_chat_dating_app/data/call_page.dart';
 import 'package:bar_chat_dating_app/providers/info_provider.dart';
 import 'package:bar_chat_dating_app/screens/card_stack.dart';
+import 'package:bar_chat_dating_app/screens/chat_screen.dart';
 import 'package:bar_chat_dating_app/screens/home_page_screen.dart';
 import 'package:bar_chat_dating_app/screens/splash_screen.dart';
 import 'package:bar_chat_dating_app/screens/start_screen.dart';
@@ -34,7 +35,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(scaffoldBackgroundColor: Colors.black),
         home: const SplashScreen(),
-        // home: const HomePageScreen(),
+        // home: const ChatScreen(),
         routes: {
           // '/home_page': (context) => HomePage(),
           '/call_page': (context) => const CallPage(),

@@ -70,7 +70,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           backgroundColor: Colors.pink,
           title: const Text(
             'Verify Email',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(),
           )),
       body: Padding(
         padding: const EdgeInsets.all(16),

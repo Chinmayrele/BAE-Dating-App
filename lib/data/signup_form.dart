@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../auth/login.dart';
 import '../auth/signup.dart';
+import '../screens/forgot_password.dart';
 
 class SignUpForm extends StatefulWidget {
   final bool isLogin;
@@ -288,6 +289,28 @@ class _SignUpFormState extends State<SignUpForm> {
                   ))
             ],
           ),
+          const SizedBox(height: 20),
+          widget.isLogin
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Forgot your password?',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (ctx) => const ForgotPassword()));
+                        },
+                        child: const Text(
+                          'Forgot Password',
+                          style: TextStyle(
+                              color: Colors.pink, fontWeight: FontWeight.bold),
+                        ))
+                  ],
+                )
+              : const SizedBox(),
           //PHONE NUMBER LOGIN COMMENTED
 
           // const Divider(
