@@ -1,13 +1,8 @@
-import 'package:bar_chat_dating_app/screens/person_info.dart';
 import 'package:bar_chat_dating_app/screens/que_screen.dart';
-import 'package:bar_chat_dating_app/screens/splash_screen.dart';
 import 'package:bar_chat_dating_app/shared_preferences/user_values.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_tinder_clone_app/screens/home_page_screen.dart';
-// import 'package:login_ui/screens/home_screen.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import './home_page_screen.dart';
 
